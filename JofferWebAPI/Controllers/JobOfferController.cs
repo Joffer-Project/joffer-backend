@@ -13,16 +13,18 @@ public class JobOfferController : ControllerBase
     };
 
     private readonly ILogger<JobOfferController> _logger;
+    private IConfiguration _configuration;
 
-    public JobOfferController(ILogger<JobOfferController> logger)
+    public JobOfferController(ILogger<JobOfferController> logger, IConfiguration configuration)
     {
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpGet("GetAll")]
     public IEnumerable<string> Get()
     {
-        string cs = "test";
+        string cs = _configuration.GetConnectionString("DefaultConnection");
         var companies = new List<string>();
         string statement = "SELECT * FROM companies";
         var con = new MySqlConnection(cs);
