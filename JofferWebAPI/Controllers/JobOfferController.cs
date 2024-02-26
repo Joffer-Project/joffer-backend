@@ -25,24 +25,22 @@ public class JobOfferController : ControllerBase
     public IEnumerable<string> Get()
     {
         string cs = _configuration.GetConnectionString("DefaultConnection");
-        var companies = new List<string>();
-        string statement = "SELECT * FROM companies";
+        List<string> accountNames = new List<string>();
+        string statement = "SELECT * FROM accounts";
         var con = new MySqlConnection(cs);
         con.Open();
         var cmd = new MySqlCommand(statement, con);
         MySqlDataReader reader = cmd.ExecuteReader();
         
-        int id = reader.GetOrdinal("id");
         int name = reader.GetOrdinal("name");
 
         while (reader.Read())
         {
-            string companyName = reader.IsDBNull(name) ? null : reader.GetString(name);
-            companies.Add(companyName);
+            string accountName = reader.IsDBNull(name) ? null : reader.GetString(name);
+            accountNames.Add(accountName);
         }
         con.Close();
         
-        return companies;
+        return accountNames;
     }
 }
-
