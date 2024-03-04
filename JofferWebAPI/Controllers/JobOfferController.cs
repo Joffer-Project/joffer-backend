@@ -45,4 +45,14 @@ public class JobOfferController : ControllerBase
         
         return accountNames;
     }
+    
+    [HttpGet("private")]
+    [Authorize]
+    public IActionResult Private()
+    {
+        return Ok(new
+        {
+            Message = "Hello from a private endpoint! You need to be authenticated to see this."
+        });
+    }
 }
