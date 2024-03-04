@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 namespace JofferWebAPI.Controllers;
@@ -22,6 +23,7 @@ public class JobOfferController : ControllerBase
     }
 
     [HttpGet("GetAll")]
+    [Authorize]
     public IEnumerable<string> Get()
     {
         string cs = _configuration.GetConnectionString("DefaultConnection");
