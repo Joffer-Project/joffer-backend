@@ -1,8 +1,11 @@
 ﻿using JofferWebAPI;
+using JofferWebAPI.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +21,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new
-        HasScopeRequirement("read:messages", domain)));
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new
+//        HasScopeRequirement("read:messages", domain)));
+//});
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
@@ -30,6 +33,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 

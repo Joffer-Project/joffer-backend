@@ -22,26 +22,27 @@ public class JobOfferController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpGet("private")]
+    //[HttpGet("private")]
+    //[Authorize]
+    //public IActionResult Private()
+    //{
+    //    return Ok(new
+    //    {
+    //        Message = "Hello from a private endpoint! You need to be authenticated to see this."
+    //    });
+    //}
+
+    //[HttpGet("private-scoped")]
+    //[Authorize("read:messages")]
+    //public IActionResult Scoped()
+    //{
+    //    return Ok(new
+    //    {
+    //        Message = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
+    //    });
+    //}
+
     [Authorize]
-    public IActionResult Private()
-    {
-        return Ok(new
-        {
-            Message = "Hello from a private endpoint! You need to be authenticated to see this."
-        });
-    }
-
-    [HttpGet("private-scoped")]
-    [Authorize("read:messages")]
-    public IActionResult Scoped()
-    {
-        return Ok(new
-        {
-            Message = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
-        });
-    }
-
     [HttpGet("GetAll")]
     public IEnumerable<string> Get()
     {
