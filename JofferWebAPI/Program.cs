@@ -37,9 +37,9 @@ app.UseHttpsRedirection();
 
 // Add these lines before UseEndpoints()
 app.UseAuthentication();
+app.UseRouting(); 
 app.UseAuthorization();
 
-app.UseRouting(); // Add this line
 
 app.UseEndpoints(endpoints =>
 {
