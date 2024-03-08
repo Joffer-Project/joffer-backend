@@ -12,55 +12,55 @@ namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class JobOfferController : ControllerBase
+    public class DisciplineController : ControllerBase
     {
         private readonly MyDbContext _context;
 
-        public JobOfferController(MyDbContext context)
+        public DisciplineController(MyDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/JobOffer
+        // GET: api/Discipline
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffers()
+        public async Task<ActionResult<IEnumerable<Dicipline>>> GetDiciplines()
         {
-          if (_context.JobOffers == null)
+          if (_context.Diciplines == null)
           {
               return NotFound();
           }
-            return await _context.JobOffers.ToListAsync();
+            return await _context.Diciplines.ToListAsync();
         }
 
-        // GET: api/JobOffer/5
+        // GET: api/Discipline/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobOffer>> GetJobOffer(int id)
+        public async Task<ActionResult<Dicipline>> GetDicipline(int id)
         {
-          if (_context.JobOffers == null)
+          if (_context.Diciplines == null)
           {
               return NotFound();
           }
-            var jobOffer = await _context.JobOffers.FindAsync(id);
+            var dicipline = await _context.Diciplines.FindAsync(id);
 
-            if (jobOffer == null)
+            if (dicipline == null)
             {
                 return NotFound();
             }
 
-            return jobOffer;
+            return dicipline;
         }
 
-        // PUT: api/JobOffer/5
+        // PUT: api/Discipline/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobOffer(int id, JobOffer jobOffer)
+        public async Task<IActionResult> PutDicipline(int id, Dicipline dicipline)
         {
-            if (id != jobOffer.Id)
+            if (id != dicipline.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(jobOffer).State = EntityState.Modified;
+            _context.Entry(dicipline).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +68,7 @@ namespace JofferWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!JobOfferExists(id))
+                if (!DiciplineExists(id))
                 {
                     return NotFound();
                 }
@@ -81,44 +81,44 @@ namespace JofferWebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/JobOffer
+        // POST: api/Discipline
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<JobOffer>> PostJobOffer(JobOffer jobOffer)
+        public async Task<ActionResult<Dicipline>> PostDicipline(Dicipline dicipline)
         {
-          if (_context.JobOffers == null)
+          if (_context.Diciplines == null)
           {
-              return Problem("Entity set 'MyDbContext.JobOffers'  is null.");
+              return Problem("Entity set 'MyDbContext.Diciplines'  is null.");
           }
-            _context.JobOffers.Add(jobOffer);
+            _context.Diciplines.Add(dicipline);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJobOffer", new { id = jobOffer.Id }, jobOffer);
+            return CreatedAtAction("GetDicipline", new { id = dicipline.Id }, dicipline);
         }
 
-        // DELETE: api/JobOffer/5
+        // DELETE: api/Discipline/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJobOffer(int id)
+        public async Task<IActionResult> DeleteDicipline(int id)
         {
-            if (_context.JobOffers == null)
+            if (_context.Diciplines == null)
             {
                 return NotFound();
             }
-            var jobOffer = await _context.JobOffers.FindAsync(id);
-            if (jobOffer == null)
+            var dicipline = await _context.Diciplines.FindAsync(id);
+            if (dicipline == null)
             {
                 return NotFound();
             }
 
-            _context.JobOffers.Remove(jobOffer);
+            _context.Diciplines.Remove(dicipline);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool JobOfferExists(int id)
+        private bool DiciplineExists(int id)
         {
-            return (_context.JobOffers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Diciplines?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
