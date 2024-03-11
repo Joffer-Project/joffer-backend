@@ -4,6 +4,12 @@ namespace JofferWebAPI.Dtos;
 
 public class AccountDto
 {
+
+    public AccountDto()
+    {
+        
+    }
+    
     public AccountDto(Account account)
     {
         Id = account.Id;

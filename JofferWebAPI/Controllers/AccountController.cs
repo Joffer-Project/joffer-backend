@@ -88,16 +88,17 @@ namespace JofferWebAPI.Controllers
         // POST: api/Account
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(Account account)
+        public async Task<ActionResult<AccountDto>> PostAccount(AccountDto accountDto)
         {
           if (_context.Accounts == null)
           {
               return Problem("Entity set 'MyDbContext.Accounts'  is null.");
           }
-            _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
+          
+          _context.Accounts.Add(new Account(accountDto));
+          await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAccount", new { id = account.Id }, account);
+          return CreatedAtAction("GetAccount", new { id = accountDto.Id }, accountDto);
         }
 
         // DELETE: api/Account/5

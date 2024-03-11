@@ -1,7 +1,26 @@
-﻿namespace JofferWebAPI.Models;
+﻿using JofferWebAPI.Dtos;
+
+namespace JofferWebAPI.Models;
 
 public partial class Account
 {
+    public Account()
+    {
+        
+    }
+    
+    public Account(AccountDto accountDto)
+    {
+        Name = accountDto.Name;
+        Username = accountDto.Username;
+        Password = accountDto.Password;
+        AccountType = accountDto.AccountType;
+        ReachByPhone = accountDto.ReachByPhone;
+        ReachByEmail = accountDto.ReachByEmail;
+        IsPremium = accountDto.IsPremium;
+        IsActive = accountDto.IsActive;
+    }
+    
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
