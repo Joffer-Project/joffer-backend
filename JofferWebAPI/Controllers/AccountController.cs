@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly MyDbContext _context;
