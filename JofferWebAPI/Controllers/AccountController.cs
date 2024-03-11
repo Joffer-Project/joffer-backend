@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
+using JofferWebAPI.Dtos;
 using JofferWebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 
@@ -13,7 +14,7 @@ namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -25,13 +26,14 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Account
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
         {
           if (_context.Accounts == null)
           {
               return NotFound();
           }
-            return await _context.Accounts.ToListAsync();
+            // return await _context.Accounts.ToListAsync();
+            return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
         }
 
         // GET: api/Account/5
