@@ -21,13 +21,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new
-//        HasScopeRequirement("read:messages", domain)));
-//});
-
-builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+//builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
 // Add services to the container.
 builder.Services.AddControllers();
