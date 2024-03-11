@@ -12,55 +12,55 @@ namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class JobOfferController : ControllerBase
+    public class RecruiterController : ControllerBase
     {
         private readonly MyDbContext _context;
 
-        public JobOfferController(MyDbContext context)
+        public RecruiterController(MyDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/JobOffer
+        // GET: api/Recruiter
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffers()
+        public async Task<ActionResult<IEnumerable<Recruiter>>> GetRecruiters()
         {
-          if (_context.JobOffers == null)
+          if (_context.Recruiters == null)
           {
               return NotFound();
           }
-            return await _context.JobOffers.ToListAsync();
+            return await _context.Recruiters.ToListAsync();
         }
 
-        // GET: api/JobOffer/5
+        // GET: api/Recruiter/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobOffer>> GetJobOffer(int id)
+        public async Task<ActionResult<Recruiter>> GetRecruiter(int id)
         {
-          if (_context.JobOffers == null)
+          if (_context.Recruiters == null)
           {
               return NotFound();
           }
-            var jobOffer = await _context.JobOffers.FindAsync(id);
+            var recruiter = await _context.Recruiters.FindAsync(id);
 
-            if (jobOffer == null)
+            if (recruiter == null)
             {
                 return NotFound();
             }
 
-            return jobOffer;
+            return recruiter;
         }
 
-        // PUT: api/JobOffer/5
+        // PUT: api/Recruiter/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobOffer(int id, JobOffer jobOffer)
+        public async Task<IActionResult> PutRecruiter(int id, Recruiter recruiter)
         {
-            if (id != jobOffer.Id)
+            if (id != recruiter.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(jobOffer).State = EntityState.Modified;
+            _context.Entry(recruiter).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +68,7 @@ namespace JofferWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!JobOfferExists(id))
+                if (!RecruiterExists(id))
                 {
                     return NotFound();
                 }
@@ -81,44 +81,44 @@ namespace JofferWebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/JobOffer
+        // POST: api/Recruiter
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<JobOffer>> PostJobOffer(JobOffer jobOffer)
+        public async Task<ActionResult<Recruiter>> PostRecruiter(Recruiter recruiter)
         {
-          if (_context.JobOffers == null)
+          if (_context.Recruiters == null)
           {
-              return Problem("Entity set 'MyDbContext.JobOffers'  is null.");
+              return Problem("Entity set 'MyDbContext.Recruiters'  is null.");
           }
-            _context.JobOffers.Add(jobOffer);
+            _context.Recruiters.Add(recruiter);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJobOffer", new { id = jobOffer.Id }, jobOffer);
+            return CreatedAtAction("GetRecruiter", new { id = recruiter.Id }, recruiter);
         }
 
-        // DELETE: api/JobOffer/5
+        // DELETE: api/Recruiter/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJobOffer(int id)
+        public async Task<IActionResult> DeleteRecruiter(int id)
         {
-            if (_context.JobOffers == null)
+            if (_context.Recruiters == null)
             {
                 return NotFound();
             }
-            var jobOffer = await _context.JobOffers.FindAsync(id);
-            if (jobOffer == null)
+            var recruiter = await _context.Recruiters.FindAsync(id);
+            if (recruiter == null)
             {
                 return NotFound();
             }
 
-            _context.JobOffers.Remove(jobOffer);
+            _context.Recruiters.Remove(recruiter);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool JobOfferExists(int id)
+        private bool RecruiterExists(int id)
         {
-            return (_context.JobOffers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Recruiters?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

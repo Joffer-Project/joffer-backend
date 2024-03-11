@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using JofferWebAPI;
 using JofferWebAPI.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,6 +23,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Add services to the container.
+=======
+﻿using JofferWebAPI.Context;
+using MySql.Data.MySqlClient;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+// Add services to the container.
+
+
+builder.Services.AddControllers();
+builder.Services.AddDbContext<MyDbContext>(options => options.UseMySQL(configuration.GetConnectionString("DefaultConnection")));
+>>>>>>> origin/ef-implementation
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,6 +43,33 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 
 var app = builder.Build();
 
+<<<<<<< HEAD
+=======
+// Configure the HTTP request pipeline.
+// if (app.Environment.IsDevelopment())
+// {
+     app.UseSwagger();
+     app.UseSwaggerUI();
+// }
+
+//SQL connection
+     using (MySqlConnection connection = new MySqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")))
+     {
+          try
+          {
+               connection.Open();
+               Console.WriteLine("Database connected!");
+          }
+          catch 
+          {
+               
+               Console.WriteLine("Database connection error. (Don't forget the VPN)");
+          }
+
+          connection.Close();
+     }
+
+>>>>>>> origin/ef-implementation
 app.UseHttpsRedirection();
 
 // Add these lines before UseEndpoints()
