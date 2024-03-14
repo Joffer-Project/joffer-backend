@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
+using JofferWebAPI.Dtos;
 using JofferWebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 
@@ -13,6 +14,7 @@ namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    // [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -21,17 +23,24 @@ namespace JofferWebAPI.Controllers
         {
             _context = context;
         }
+        
+        [HttpGet("test")]
+        public String Test()
+        {
+            return "Test successful";
+        }
 
         // GET: api/Account
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
         {
           if (_context.Accounts == null)
           {
               return NotFound();
           }
-            return await _context.Accounts.ToListAsync();
+            // return await _context.Accounts.ToListAsync();
+            return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
         }
 
         // GET: api/Account/5
@@ -86,16 +95,17 @@ namespace JofferWebAPI.Controllers
         // POST: api/Account
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(Account account)
+        public async Task<ActionResult<AccountDto>> PostAccount(AccountDto accountDto)
         {
           if (_context.Accounts == null)
           {
               return Problem("Entity set 'MyDbContext.Accounts'  is null.");
           }
-            _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
+          
+          _context.Accounts.Add(new Account(accountDto));
+          await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAccount", new { id = account.Id }, account);
+          return CreatedAtAction("GetAccount", new { id = accountDto.Id }, accountDto);
         }
 
         // DELETE: api/Account/5
