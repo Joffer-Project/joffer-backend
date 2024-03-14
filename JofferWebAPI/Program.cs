@@ -24,8 +24,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Add services to the container.
-var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddControllers();

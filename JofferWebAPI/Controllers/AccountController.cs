@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JofferWebAPI.Controllers
 {
@@ -22,6 +23,7 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Account
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
         {
