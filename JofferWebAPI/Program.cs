@@ -76,20 +76,4 @@ app.UseEndpoints(endpoints =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// SQL connection
-using (MySqlConnection connection = new MySqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")))
-{
-    try
-    {
-        connection.Open();
-        Console.WriteLine("Database connected!");
-    }
-    catch
-    {
-        throw new Exception("Database connection error. (Don't forget the VPN)");
-    }
-
-    connection.Close();
-}
-
 app.Run();

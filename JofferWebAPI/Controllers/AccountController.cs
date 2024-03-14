@@ -23,6 +23,12 @@ namespace JofferWebAPI.Controllers
         {
             _context = context;
         }
+        
+        [HttpGet("test")]
+        public String Test()
+        {
+            return "Test successful";
+        }
 
         // GET: api/Account
         [HttpGet]
