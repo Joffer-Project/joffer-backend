@@ -27,7 +27,7 @@ namespace JofferWebAPI.Controllers
         [HttpGet("test")]
         public String Test()
         {
-            return "Test successful A";
+            return "Test successful B";
         }
 
         // GET: api/Account
