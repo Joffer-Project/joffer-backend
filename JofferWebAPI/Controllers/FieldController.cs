@@ -14,9 +14,9 @@ namespace JofferWebAPI.Controllers
     [ApiController]
     public class FieldController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public FieldController(MyDbContext context)
+        public FieldController(DbContextRender context)
         {
             _context = context;
         }

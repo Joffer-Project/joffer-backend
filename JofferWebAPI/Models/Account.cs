@@ -1,8 +1,9 @@
-﻿using JofferWebAPI.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
-public partial class Account
+public class Account
 {
     public Account()
     {
@@ -21,6 +22,7 @@ public partial class Account
         IsActive = accountDto.IsActive;
     }
     
+    [Key]
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;

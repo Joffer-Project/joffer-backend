@@ -14,9 +14,9 @@ namespace JofferWebAPI.Controllers
     [ApiController]
     public class AccountDiciplineController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public AccountDiciplineController(MyDbContext context)
+        public AccountDiciplineController(DbContextRender context)
         {
             _context = context;
         }

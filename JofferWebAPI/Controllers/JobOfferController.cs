@@ -14,9 +14,9 @@ namespace JofferWebAPI.Controllers
     [ApiController]
     public class JobOfferController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public JobOfferController(MyDbContext context)
+        public JobOfferController(DbContextRender context)
         {
             _context = context;
         }
