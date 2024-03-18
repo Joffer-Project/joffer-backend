@@ -14,18 +14,16 @@ namespace JofferWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
     public class AccountController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public AccountController(MyDbContext context)
+        public AccountController(DbContextRender context)
         {
             _context = context;
         }
 
         // GET: api/Account
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
         {

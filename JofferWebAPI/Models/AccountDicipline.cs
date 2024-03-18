@@ -1,7 +1,12 @@
-﻿namespace JofferWebAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JofferWebAPI.Models;
 
 public partial class AccountDicipline
 {
+    [Key]
+    public int Id { get; set; }
+    
     public int AccountId { get; set; }
 
     public int FieldId { get; set; }

@@ -14,9 +14,9 @@ namespace JofferWebAPI.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public CompanyController(MyDbContext context)
+        public CompanyController(DbContextRender context)
         {
             _context = context;
         }

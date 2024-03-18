@@ -1,7 +1,10 @@
-﻿namespace JofferWebAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JofferWebAPI.Models;
 
 public partial class JobOffer
 {
+    [Key]
     public int Id { get; set; }
 
     public string Title { get; set; } = null!;

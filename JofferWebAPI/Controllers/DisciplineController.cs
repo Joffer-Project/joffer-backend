@@ -14,9 +14,9 @@ namespace JofferWebAPI.Controllers
     [ApiController]
     public class DisciplineController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        private readonly DbContextRender _context;
 
-        public DisciplineController(MyDbContext context)
+        public DisciplineController(DbContextRender context)
         {
             _context = context;
         }
