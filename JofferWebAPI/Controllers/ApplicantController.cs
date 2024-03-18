@@ -54,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/Applicant/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicant(int id, Applicant applicant)
+        public async Task<IActionResult> PutApplicant(int id, ApplicantDto applicantDto)
         {
+            Applicant applicant = new(applicantDto)
+            {
+                Id = id,
+            };
+
             if (id != applicant.Id)
             {
                 return BadRequest();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -51,10 +52,14 @@ namespace JofferWebAPI.Controllers
         }
 
         // PUT: api/Company/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, Company company)
+        public async Task<IActionResult> PutCompany(int id, CompanyDto companyDto)
         {
+            Company company = new(companyDto)
+            {
+                Id = id
+            };
+
             if (id != company.Id)
             {
                 return BadRequest();
@@ -82,19 +87,20 @@ namespace JofferWebAPI.Controllers
         }
 
         // POST: api/Company
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(Company company)
+        public async Task<ActionResult<CompanyDto>> PostCompany(CompanyDto companyDto)
         {
-          if (_context.Companies == null)
-          {
-              return Problem("Entity set 'MyDbContext.Companies'  is null.");
-          }
-            _context.Companies.Add(company);
+            if (_context.Companies == null)
+            {
+                return Problem("Entity set 'MyDbContext.Companies'  is null.");
+            }
+
+            _context.Companies.Add(new Company(companyDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCompany", new { id = company.Id }, company);
+            return CreatedAtAction("GetCompany", new { id = companyDto.Id }, companyDto);
         }
+
 
         // DELETE: api/Company/5
         [HttpDelete("{id}")]
