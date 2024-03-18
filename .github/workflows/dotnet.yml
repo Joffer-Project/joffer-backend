@@ -22,11 +22,6 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Set up PostgreSQL connection string
-      env:
-          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
-      run: |
-          sed -i 's#"DefaultConnection": ".*"#"DefaultConnection": "'"$CONNECTION_STRING"'"#' JofferWebAPI/appsettings.json
     - name: Build
       run: dotnet build --no-restore
     - name: Test
