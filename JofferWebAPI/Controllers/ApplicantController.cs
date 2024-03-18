@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -84,16 +85,16 @@ namespace JofferWebAPI.Controllers
         // POST: api/Applicant
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Applicant>> PostApplicant(Applicant applicant)
+        public async Task<ActionResult<ApplicantDto>> PostApplicant(ApplicantDto applicantDto)
         {
           if (_context.Applicants == null)
           {
               return Problem("Entity set 'MyDbContext.Applicants'  is null.");
           }
-            _context.Applicants.Add(applicant);
+            _context.Applicants.Add(new Applicant(applicantDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApplicant", new { id = applicant.Id }, applicant);
+            return CreatedAtAction("GetApplicant", new { id = applicantDto.Id }, applicantDto);
         }
 
         // DELETE: api/Applicant/5

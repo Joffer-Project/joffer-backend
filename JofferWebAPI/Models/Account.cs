@@ -4,12 +4,7 @@ using JofferWebAPI.Dtos;
 namespace JofferWebAPI.Models;
 
 public class Account
-{
-    public Account()
-    {
-        
-    }
-    
+{  
     public Account(AccountDto accountDto)
     {
         Name = accountDto.Name;
