@@ -4,6 +4,8 @@ namespace JofferWebAPI.Dtos
 {
     public class ApplicantDto
     {
+        public ApplicantDto() { }   
+
         public ApplicantDto(Applicant applicant) { 
             Id = applicant.Id;
             AccountId = applicant.AccountId;

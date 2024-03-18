@@ -56,8 +56,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/Account/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(int id, Account account)
+        public async Task<IActionResult> PutAccount(int id, AccountDto accountDto)
         {
+            Account account = new(accountDto)
+            {
+                Id = id
+            };
+
             if (id != account.Id)
             {
                 return BadRequest();

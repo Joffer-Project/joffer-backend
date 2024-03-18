@@ -5,6 +5,11 @@ namespace JofferWebAPI.Models;
 
 public partial class Applicant
 {
+    public Applicant()
+    {
+
+    }
+
     public Applicant(ApplicantDto applicantDto) { 
         AccountId = applicantDto.AccountId;
         AboutMe = applicantDto.AboutMe;
