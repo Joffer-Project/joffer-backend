@@ -14,9 +14,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
-      
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -48,6 +45,4 @@ jobs:
         dockerfile: Dockerfile
         tags: joffer2024/joffer-backend
         platforms: linux/amd64
-        env:  
-          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
     

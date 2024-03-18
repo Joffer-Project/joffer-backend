@@ -61,10 +61,5 @@ RUN adduser \
     appuser
 
 USER appuser
-# Set up environment variable
-ENV CONNECTION_STRING=${CONNECTION_STRING}
-
-# Update appsettings.json with the connection string
-RUN sed -i "s@\"DefaultConnection\":.*@\"DefaultConnection\": \"$CONNECTION_STRING\"@" appsettings.json
 
 ENTRYPOINT ["dotnet", "JofferWebAPI.dll"]
