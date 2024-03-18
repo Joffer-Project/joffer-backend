@@ -45,7 +45,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS final
 WORKDIR /app
 RUN --mount=type=secret,id=secret_1 \
-    sed -i "s/MY_SECRET_1=/MY_SECRET_1=$(cat /run/secrets/secret_1)/"
+  cat /run/secrets/secret_1
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
 
