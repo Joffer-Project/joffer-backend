@@ -59,11 +59,6 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
-ARG CONNECTION_STRING
-ENV CONNECTION_STRING=$CONNECTION_STRING
-
-# Inject the secret into appsettings.json
-RUN sed -i 's@"DefaultConnection":.*@"DefaultConnection": "'"${CONNECTION_STRING}"'",@' /app/JofferWebAPI/appsettings.json
 
 USER appuser
 
