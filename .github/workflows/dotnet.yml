@@ -47,5 +47,4 @@ jobs:
         platforms: linux/amd64
         secrets: |
           "secret_1=${{ secrets.CONNECTION_STRING }}"
-          "secret_2=${{ secrets.MY_SECRET_2 }}"   
     

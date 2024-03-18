@@ -46,9 +46,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS final
 WORKDIR /app
 RUN --mount=type=secret,id=secret_1 \
     sed -i "s/MY_SECRET_1=/MY_SECRET_1=$(cat /run/secrets/secret_1)/" .appsettings.json
-
-RUN --mount=type=secret,id=secret_2 \
-    sed -i "s/SOMETHING_VERY_SECRET=/SOMETHING_VERY_SECRET=$(cat /run/secrets/secret_2)/" .appsettings.json
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
 
