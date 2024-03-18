@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1.2
+# syntax=docker/dockerfile:1
 
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at
@@ -60,6 +60,5 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 USER appuser
-RUN --mount=type=secret,id=appsettings.json,dst=/app/JofferWebAPI/appsettings.json cat /appsettings.json > appsettings.json
-ENTRYPOINT ["dotnet", "JofferWebAPI.dll"]
 
+ENTRYPOINT ["dotnet", "JofferWebAPI.dll"]
