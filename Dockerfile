@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1.2
+# syntax=docker/dockerfile:1
 
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at
@@ -44,8 +44,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 # or SHA (e.g., mcr.microsoft.com/dotnet/aspnet@sha256:f3d99f54d504a21d38e4cc2f13ff47d67235efeeb85c109d3d1ff1808b38d034).
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS final
 WORKDIR /app
-RUN --mount=type=secret,id=secret_1 \
-  cat /run/secrets/secret_1
+
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
 
@@ -60,7 +59,6 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
-
 USER appuser
 
 ENTRYPOINT ["dotnet", "JofferWebAPI.dll"]
