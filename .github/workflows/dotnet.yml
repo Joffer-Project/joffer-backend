@@ -46,5 +46,6 @@ jobs:
         tags: joffer2024/joffer-backend
         platforms: linux/amd64
         secrets: |
-          "cs=${{ secrets.CONNECTION_STRING }}"    
+          "secret_1=${{ secrets.CONNECTION_STRING }}"
+          "secret_2=${{ secrets.MY_SECRET_2 }}"   
     
