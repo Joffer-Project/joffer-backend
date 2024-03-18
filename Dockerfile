@@ -60,6 +60,9 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+RUN --mount=type=secret,id=cs \
+  cat /run/secrets/cs
+
 USER appuser
 
 ENTRYPOINT ["dotnet", "JofferWebAPI.dll"]

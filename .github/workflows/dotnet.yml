@@ -45,4 +45,6 @@ jobs:
         dockerfile: Dockerfile
         tags: joffer2024/joffer-backend
         platforms: linux/amd64
+        secrets: |
+          "cs=${{ secrets.CONNECTION_STRING }}"    
     
