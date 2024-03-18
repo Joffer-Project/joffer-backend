@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -53,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/JobOffer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobOffer(int id, JobOffer jobOffer)
+        public async Task<IActionResult> PutJobOffer(int id, JobOfferDto jobOfferDto)
         {
+            JobOffer jobOffer = new(jobOfferDto)
+            {
+                Id = id,
+            };
+
             if (id != jobOffer.Id)
             {
                 return BadRequest();
@@ -84,16 +90,16 @@ namespace JofferWebAPI.Controllers
         // POST: api/JobOffer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<JobOffer>> PostJobOffer(JobOffer jobOffer)
+        public async Task<ActionResult<JobOfferDto>> PostJobOffer(JobOfferDto jobOfferDto)
         {
           if (_context.JobOffers == null)
           {
               return Problem("Entity set 'MyDbContext.JobOffers'  is null.");
           }
-            _context.JobOffers.Add(jobOffer);
+            _context.JobOffers.Add(new JobOffer(jobOfferDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJobOffer", new { id = jobOffer.Id }, jobOffer);
+            return CreatedAtAction("GetJobOffer", new { id = jobOfferDto.Id }, jobOfferDto);
         }
 
         // DELETE: api/JobOffer/5

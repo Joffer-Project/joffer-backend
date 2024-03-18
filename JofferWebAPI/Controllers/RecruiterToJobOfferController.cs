@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -53,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/RecruiterToJobOffer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecruiterToJobOffer(int id, RecruiterToJobOffer recruiterToJobOffer)
+        public async Task<IActionResult> PutRecruiterToJobOffer(int id, RecruiterToJobOfferDto recruiterToJobOfferDto)
         {
+            RecruiterToJobOffer recruiterToJobOffer = new(recruiterToJobOfferDto)
+            {
+                Id = id,
+            };
+
             if (id != recruiterToJobOffer.Id)
             {
                 return BadRequest();
@@ -84,16 +90,16 @@ namespace JofferWebAPI.Controllers
         // POST: api/RecruiterToJobOffer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RecruiterToJobOffer>> PostRecruiterToJobOffer(RecruiterToJobOffer recruiterToJobOffer)
+        public async Task<ActionResult<RecruiterToJobOfferDto>> PostRecruiterToJobOffer(RecruiterToJobOfferDto recruiterToJobOfferDto)
         {
-          if (_context.RecruiterToJobOffers == null)
-          {
-              return Problem("Entity set 'MyDbContext.RecruiterToJobOffers'  is null.");
-          }
-            _context.RecruiterToJobOffers.Add(recruiterToJobOffer);
+            if (_context.RecruiterToJobOffers == null)
+            {
+                return Problem("Entity set 'MyDbContext.RecruiterToJobOffers'  is null.");
+            }
+            _context.RecruiterToJobOffers.Add(new RecruiterToJobOffer(recruiterToJobOfferDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRecruiterToJobOffer", new { id = recruiterToJobOffer.Id }, recruiterToJobOffer);
+            return CreatedAtAction("GetRecruiterToJobOffer", new { id = recruiterToJobOfferDto.Id }, recruiterToJobOfferDto);
         }
 
         // DELETE: api/RecruiterToJobOffer/5
