@@ -1,9 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
 public partial class Company
 {
+    public Company() { }
+
+    public Company (CompanyDto companyDto)
+    {
+        AccountId = companyDto.AccountId;
+        Logo = companyDto.Logo;
+        RecruiterToken = companyDto.RecruiterToken;
+        TokenActiveSince = companyDto.TokenActiveSince;
+        IsActive = companyDto.IsActive;
+    }
+
     [Key]
     public int Id { get; set; }
 

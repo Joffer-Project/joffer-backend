@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -53,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/AccountDicipline/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccountDicipline(int id, AccountDicipline accountDicipline)
+        public async Task<IActionResult> PutAccountDicipline(int id, AccountDiciplineDto accountDiciplineDto)
         {
+            AccountDicipline accountDicipline = new(accountDiciplineDto)
+            {
+                AccountId = id
+            };
+
             if (id != accountDicipline.AccountId)
             {
                 return BadRequest();
@@ -84,31 +90,19 @@ namespace JofferWebAPI.Controllers
         // POST: api/AccountDicipline
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<AccountDicipline>> PostAccountDicipline(AccountDicipline accountDicipline)
+        public async Task<ActionResult<AccountDiciplineDto>> PostAccountDicipline(AccountDiciplineDto accountDiciplineDto)
         {
-          if (_context.AccountDiciplines == null)
-          {
-              return Problem("Entity set 'MyDbContext.AccountDiciplines'  is null.");
-          }
-            _context.AccountDiciplines.Add(accountDicipline);
-            try
+            if (_context.AccountDiciplines == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (AccountDiciplineExists(accountDicipline.AccountId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return Problem("Entity set 'MyDbContext.AccountDiciplines'  is null.");
             }
 
-            return CreatedAtAction("GetAccountDicipline", new { id = accountDicipline.AccountId }, accountDicipline);
+            _context.AccountDiciplines.Add(new AccountDicipline(accountDiciplineDto));
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetAccountDicipline", new { id = accountDiciplineDto.AccountId }, accountDiciplineDto);
         }
+
 
         // DELETE: api/AccountDicipline/5
         [HttpDelete("{id}")]

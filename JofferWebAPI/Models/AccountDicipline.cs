@@ -1,9 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
 public partial class AccountDicipline
 {
+    public AccountDicipline() { }
+
+    public AccountDicipline(AccountDiciplineDto accountDiciplineDto) {
+        AccountId = accountDiciplineDto.AccountId;
+        FieldId = accountDiciplineDto.FieldId;
+        DiciplineId = accountDiciplineDto.DiciplineId;
+        IsActive = accountDiciplineDto.IsActive;
+    }
+
     [Key]
     public int Id { get; set; }
     
