@@ -1,9 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
 public partial class JobOffer
 {
+    public JobOffer() { }
+
+    public JobOffer(JobOfferDto jobOfferDto)
+    {
+        Title = jobOfferDto.Title;
+        FieldId = jobOfferDto.FieldId;
+        Description = jobOfferDto.Description;
+        Salary = jobOfferDto.Salary;
+        EmploymentStatus = jobOfferDto.EmploymentStatus;
+        CompanyId = jobOfferDto.CompanyId;
+        IsActive = jobOfferDto.IsActive;
+    }
+
     [Key]
     public int Id { get; set; }
 

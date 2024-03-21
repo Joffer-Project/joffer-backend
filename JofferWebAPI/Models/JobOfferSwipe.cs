@@ -1,9 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
 public partial class JobOfferSwipe
 {
+    public JobOfferSwipe() { }
+
+    public JobOfferSwipe(JobOfferSwipeDto jobOfferSwipeDto) { 
+        ApplicantId = jobOfferSwipeDto.ApplicantId;
+        JobOfferId = jobOfferSwipeDto.JobOfferId;
+        ApplicantInterested = jobOfferSwipeDto.ApplicantInterested;
+        FinalMatch = jobOfferSwipeDto.FinalMatch;
+        IsActive = jobOfferSwipeDto.IsActive;
+    }
+
     [Key]
     public int Id { get; set; }
 

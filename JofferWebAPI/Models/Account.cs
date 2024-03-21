@@ -7,9 +7,9 @@ public class Account
 {
     public Account()
     {
-        
+
     }
-    
+
     public Account(AccountDto accountDto)
     {
         Name = accountDto.Name;

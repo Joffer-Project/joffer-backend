@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -53,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/JobOfferSwipe/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobOfferSwipe(int id, JobOfferSwipe jobOfferSwipe)
+        public async Task<IActionResult> PutJobOfferSwipe(int id, JobOfferSwipeDto jobOfferSwipeDto)
         {
+            JobOfferSwipe jobOfferSwipe = new(jobOfferSwipeDto)
+            {
+                Id = id,
+            };
+
             if (id != jobOfferSwipe.Id)
             {
                 return BadRequest();
@@ -84,16 +90,16 @@ namespace JofferWebAPI.Controllers
         // POST: api/JobOfferSwipe
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<JobOfferSwipe>> PostJobOfferSwipe(JobOfferSwipe jobOfferSwipe)
+        public async Task<ActionResult<JobOfferSwipeDto>> PostJobOfferSwipe(JobOfferSwipeDto jobOfferSwipeDto)
         {
           if (_context.JobOfferSwipes == null)
           {
               return Problem("Entity set 'MyDbContext.JobOfferSwipes'  is null.");
           }
-            _context.JobOfferSwipes.Add(jobOfferSwipe);
+            _context.JobOfferSwipes.Add(new JobOfferSwipe(jobOfferSwipeDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJobOfferSwipe", new { id = jobOfferSwipe.Id }, jobOfferSwipe);
+            return CreatedAtAction("GetJobOfferSwipe", new { id = jobOfferSwipeDto.Id }, jobOfferSwipeDto);
         }
 
         // DELETE: api/JobOfferSwipe/5

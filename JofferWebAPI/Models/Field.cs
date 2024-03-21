@@ -1,9 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
 public partial class Field
 {
+    public Field() { }  
+
+    public Field(FieldDto fieldDto)
+    {
+        Name = fieldDto.Name;
+        IsActive = fieldDto.IsActive;
+    }
+
     [Key]
     public int Id { get; set; }
 

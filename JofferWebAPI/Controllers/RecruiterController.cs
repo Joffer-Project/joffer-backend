@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -53,8 +54,13 @@ namespace JofferWebAPI.Controllers
         // PUT: api/Recruiter/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecruiter(int id, Recruiter recruiter)
+        public async Task<IActionResult> PutRecruiter(int id, RecruiterDto recruiterDto)
         {
+            Recruiter recruiter = new(recruiterDto)
+            {
+                Id = id,
+            };
+
             if (id != recruiter.Id)
             {
                 return BadRequest();
@@ -84,16 +90,16 @@ namespace JofferWebAPI.Controllers
         // POST: api/Recruiter
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Recruiter>> PostRecruiter(Recruiter recruiter)
+        public async Task<ActionResult<RecruiterDto>> PostRecruiter(RecruiterDto recruiterDto)
         {
           if (_context.Recruiters == null)
           {
               return Problem("Entity set 'MyDbContext.Recruiters'  is null.");
           }
-            _context.Recruiters.Add(recruiter);
+            _context.Recruiters.Add(new Recruiter(recruiterDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRecruiter", new { id = recruiter.Id }, recruiter);
+            return CreatedAtAction("GetRecruiter", new { id = recruiterDto.Id }, recruiterDto);
         }
 
         // DELETE: api/Recruiter/5

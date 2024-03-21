@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -51,16 +52,20 @@ namespace JofferWebAPI.Controllers
         }
 
         // PUT: api/Field/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutField(int id, Field @field)
+        public async Task<IActionResult> PutField(int id, FieldDto fieldDto)
         {
-            if (id != @field.Id)
+            Field field = new(fieldDto)
+            {
+                Id = id
+            };
+
+            if (id != field.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(@field).State = EntityState.Modified;
+            _context.Entry(field).State = EntityState.Modified;
 
             try
             {
@@ -82,18 +87,18 @@ namespace JofferWebAPI.Controllers
         }
 
         // POST: api/Field
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Field>> PostField(Field @field)
+        public async Task<ActionResult<FieldDto>> PostField(FieldDto fieldDto)
         {
-          if (_context.Fields == null)
-          {
-              return Problem("Entity set 'MyDbContext.Fields'  is null.");
-          }
-            _context.Fields.Add(@field);
+            if (_context.Fields == null)
+            {
+                return Problem("Entity set 'MyDbContext.Fields'  is null.");
+            }
+
+            _context.Fields.Add(new Field(fieldDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetField", new { id = @field.Id }, @field);
+            return CreatedAtAction("GetField", new { id = fieldDto.Id }, fieldDto);
         }
 
         // DELETE: api/Field/5

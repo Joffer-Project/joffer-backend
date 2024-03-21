@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
+using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
@@ -50,11 +51,15 @@ namespace JofferWebAPI.Controllers
             return dicipline;
         }
 
-        // PUT: api/Discipline/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/Dicipline/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDicipline(int id, Dicipline dicipline)
+        public async Task<IActionResult> PutDicipline(int id, DiciplineDto diciplineDto)
         {
+            Dicipline dicipline = new(diciplineDto)
+            {
+                Id = id
+            };
+
             if (id != dicipline.Id)
             {
                 return BadRequest();
@@ -81,19 +86,19 @@ namespace JofferWebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Discipline
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/Dicipline
         [HttpPost]
-        public async Task<ActionResult<Dicipline>> PostDicipline(Dicipline dicipline)
+        public async Task<ActionResult<DiciplineDto>> PostDicipline(DiciplineDto diciplineDto)
         {
-          if (_context.Diciplines == null)
-          {
-              return Problem("Entity set 'MyDbContext.Diciplines'  is null.");
-          }
-            _context.Diciplines.Add(dicipline);
+            if (_context.Diciplines == null)
+            {
+                return Problem("Entity set 'MyDbContext.Diciplines'  is null.");
+            }
+
+            _context.Diciplines.Add(new Dicipline(diciplineDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDicipline", new { id = dicipline.Id }, dicipline);
+            return CreatedAtAction("GetDicipline", new { id = diciplineDto.Id }, diciplineDto);
         }
 
         // DELETE: api/Discipline/5
