@@ -13,6 +13,7 @@ public class Account
     public Account(AccountDto accountDto)
     {
         Name = accountDto.Name;
+        Auth0Id = accountDto.Auth0Id;
         Username = accountDto.Username;
         Password = accountDto.Password;
         AccountType = accountDto.AccountType;
@@ -24,6 +25,8 @@ public class Account
     
     [Key]
     public int Id { get; set; }
+
+    public string Auth0Id { get; set; } = null!;
 
     public string Name { get; set; } = null!;
 
