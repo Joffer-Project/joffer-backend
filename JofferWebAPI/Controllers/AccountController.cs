@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
