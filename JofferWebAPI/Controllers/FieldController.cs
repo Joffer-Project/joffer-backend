@@ -11,7 +11,7 @@ using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class FieldController : ControllerBase
     {
