@@ -17,7 +17,7 @@ public partial class DbContextRender : DbContext
 
     public DbSet<Account> Accounts { get; set; }
     public DbSet<AccountDicipline> AccountDiciplines { get; set; }
-    public DbSet<Applicant> Applicants { get; set; }
+    public DbSet<Talent> Talents { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Dicipline> Diciplines { get; set; }
     public DbSet<Field> Fields { get; set; }

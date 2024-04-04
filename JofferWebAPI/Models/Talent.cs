@@ -3,18 +3,18 @@ using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Models;
 
-public partial class Applicant
+public partial class Talent
 {
-    public Applicant()
+    public Talent()
     {
 
     }
 
-    public Applicant(ApplicantDto applicantDto) { 
+    public Talent(TalentDto applicantDto) { 
         AccountId = applicantDto.AccountId;
         AboutMe = applicantDto.AboutMe;
         SalaryMinimum = applicantDto.SalaryMinimum;
-        Avatar = applicantDto.Avatar;
+        AvatarUrl = applicantDto.AvatarUrl;
         IsActive = applicantDto.IsActive;
     }
 
@@ -29,7 +29,18 @@ public partial class Applicant
 
     public string EmploymentStatus { get; set; } = null!;
 
-    public byte[]? Avatar { get; set; }
+    public string? AvatarUrl { get; set; }
+    public string? Image2Url { get; set; }
+    public string? Image3Url { get; set; }
+    public string? Image4Url { get; set; }
+    public string? Image5Url { get; set; }
+
+
+    public string? GitHubUrl { get; set; }
+    public string? LinkedInUrl { get; set; }
+    public string? MediumUrl { get; set; }
+    public string? DribbleUrl { get; set; }
+    public string? PersonalUrl { get; set; }
 
     public bool IsActive { get; set; }
 

@@ -9,20 +9,20 @@ namespace JofferWebAPI.Dtos
         public JobOfferSwipeDto(JobOfferSwipe jobOfferSwipe)
         {
             Id = jobOfferSwipe.Id;
-            ApplicantId = jobOfferSwipe.ApplicantId;
+            TalentId = jobOfferSwipe.TalentId;
             JobOfferId = jobOfferSwipe.JobOfferId;
-            ApplicantInterested = jobOfferSwipe.ApplicantInterested;
+            TalentInterested = jobOfferSwipe.TalentInterested;
             FinalMatch = jobOfferSwipe.FinalMatch;
             IsActive = jobOfferSwipe.IsActive;
         }
 
         public int Id { get; set; }
 
-        public int ApplicantId { get; set; }
+        public int TalentId { get; set; }
 
         public int JobOfferId { get; set; }
 
-        public bool ApplicantInterested { get; set; }
+        public bool TalentInterested { get; set; }
 
         public bool FinalMatch { get; set; }
 

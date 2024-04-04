@@ -10,7 +10,8 @@ namespace JofferWebAPI.Dtos
         {
             Id = company.Id;
             AccountId = company.AccountId;
-            Logo = company.Logo;
+            Description = company.Description;
+            LogoUrl = company.LogoUrl;
             RecruiterToken = company.RecruiterToken;
             TokenActiveSince = company.TokenActiveSince;
             IsActive = company.IsActive;
@@ -20,7 +21,9 @@ namespace JofferWebAPI.Dtos
 
         public int AccountId { get; set; }
 
-        public byte[]? Logo { get; set; }
+        public string Description { get; set; }
+
+        public string? LogoUrl { get; set; }
 
         public string RecruiterToken { get; set; }
 

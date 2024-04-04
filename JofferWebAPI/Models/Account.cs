@@ -14,11 +14,9 @@ public class Account
     {
         Name = accountDto.Name;
         Auth0Id = accountDto.Auth0Id;
-        Username = accountDto.Username;
         Password = accountDto.Password;
         AccountType = accountDto.AccountType;
-        ReachByPhone = accountDto.ReachByPhone;
-        ReachByEmail = accountDto.ReachByEmail;
+        Email = accountDto.Email;
         IsPremium = accountDto.IsPremium;
         IsActive = accountDto.IsActive;
     }
@@ -30,15 +28,11 @@ public class Account
 
     public string Name { get; set; } = null!;
 
-    public string Username { get; set; } = null!;
-
     public string Password { get; set; } = null!;
 
     public string AccountType { get; set; } = null!;
 
-    public bool ReachByPhone { get; set; }
-
-    public bool ReachByEmail { get; set; }
+    public string Email { get; set; }
 
     public bool IsPremium { get; set; }
 
@@ -46,7 +40,7 @@ public class Account
 
     public virtual ICollection<AccountDicipline> AccountDiciplines { get; set; } = new List<AccountDicipline>();
 
-    public virtual ICollection<Applicant> Applicants { get; set; } = new List<Applicant>();
+    public virtual ICollection<Talent> Talents { get; set; } = new List<Talent>();
 
     public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 

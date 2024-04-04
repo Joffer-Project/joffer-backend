@@ -13,35 +13,35 @@ namespace JofferWebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ApplicantController : ControllerBase
+    public class TalentController : ControllerBase
     {
         private readonly DbContextRender _context;
 
-        public ApplicantController(DbContextRender context)
+        public TalentController(DbContextRender context)
         {
             _context = context;
         }
 
-        // GET: api/Applicant
+        // GET: api/Talent
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Applicant>>> GetApplicants()
+        public async Task<ActionResult<IEnumerable<Talent>>> GetTalents()
         {
-          if (_context.Applicants == null)
+          if (_context.Talents == null)
           {
               return NotFound();
           }
-            return await _context.Applicants.ToListAsync();
+            return await _context.Talents.ToListAsync();
         }
 
-        // GET: api/Applicant/5
+        // GET: api/Talent/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Applicant>> GetApplicant(int id)
+        public async Task<ActionResult<Talent>> GetTalent(int id)
         {
-          if (_context.Applicants == null)
+          if (_context.Talents == null)
           {
               return NotFound();
           }
-            var applicant = await _context.Applicants.FindAsync(id);
+            var applicant = await _context.Talents.FindAsync(id);
 
             if (applicant == null)
             {
@@ -51,12 +51,12 @@ namespace JofferWebAPI.Controllers
             return applicant;
         }
 
-        // PUT: api/Applicant/5
+        // PUT: api/Talent/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicant(int id, ApplicantDto applicantDto)
+        public async Task<IActionResult> PutTalent(int id, TalentDto applicantDto)
         {
-            Applicant applicant = new(applicantDto)
+            Talent applicant = new(applicantDto)
             {
                 Id = id,
             };
@@ -74,7 +74,7 @@ namespace JofferWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ApplicantExists(id))
+                if (!TalentExists(id))
                 {
                     return NotFound();
                 }
@@ -87,44 +87,44 @@ namespace JofferWebAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Applicant
+        // POST: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ApplicantDto>> PostApplicant(ApplicantDto applicantDto)
+        public async Task<ActionResult<TalentDto>> PostTalent(TalentDto applicantDto)
         {
-          if (_context.Applicants == null)
+          if (_context.Talents == null)
           {
-              return Problem("Entity set 'MyDbContext.Applicants'  is null.");
+              return Problem("Entity set 'MyDbContext.Talents'  is null.");
           }
-            _context.Applicants.Add(new Applicant(applicantDto));
+            _context.Talents.Add(new Talent(applicantDto));
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetApplicant", new { id = applicantDto.Id }, applicantDto);
+            return CreatedAtAction("GetTalent", new { id = applicantDto.Id }, applicantDto);
         }
 
-        // DELETE: api/Applicant/5
+        // DELETE: api/Talent/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteApplicant(int id)
+        public async Task<IActionResult> DeleteTalent(int id)
         {
-            if (_context.Applicants == null)
+            if (_context.Talents == null)
             {
                 return NotFound();
             }
-            var applicant = await _context.Applicants.FindAsync(id);
+            var applicant = await _context.Talents.FindAsync(id);
             if (applicant == null)
             {
                 return NotFound();
             }
 
-            _context.Applicants.Remove(applicant);
+            _context.Talents.Remove(applicant);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ApplicantExists(int id)
+        private bool TalentExists(int id)
         {
-            return (_context.Applicants?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Talents?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

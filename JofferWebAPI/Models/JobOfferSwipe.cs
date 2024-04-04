@@ -8,9 +8,10 @@ public partial class JobOfferSwipe
     public JobOfferSwipe() { }
 
     public JobOfferSwipe(JobOfferSwipeDto jobOfferSwipeDto) { 
-        ApplicantId = jobOfferSwipeDto.ApplicantId;
+        
+        Id = jobOfferSwipeDto.TalentId;
         JobOfferId = jobOfferSwipeDto.JobOfferId;
-        ApplicantInterested = jobOfferSwipeDto.ApplicantInterested;
+        TalentInterested = jobOfferSwipeDto.TalentInterested;
         FinalMatch = jobOfferSwipeDto.FinalMatch;
         IsActive = jobOfferSwipeDto.IsActive;
     }
@@ -18,11 +19,11 @@ public partial class JobOfferSwipe
     [Key]
     public int Id { get; set; }
 
-    public int ApplicantId { get; set; }
+    public int TalentId { get; set; }
 
     public int JobOfferId { get; set; }
 
-    public bool ApplicantInterested { get; set; }
+    public bool TalentInterested { get; set; }
 
     public bool FinalMatch { get; set; }
 

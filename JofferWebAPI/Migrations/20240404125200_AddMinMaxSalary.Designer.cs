@@ -3,6 +3,7 @@ using System;
 using JofferWebAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JofferWebAPI.Migrations
 {
     [DbContext(typeof(DbContextRender))]
-    partial class DbContextRenderModelSnapshot : ModelSnapshot
+    [Migration("20240404125200_AddMinMaxSalary")]
+    partial class AddMinMaxSalary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,10 +41,6 @@ namespace JofferWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -53,6 +52,16 @@ namespace JofferWebAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("ReachByEmail")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ReachByPhone")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -92,6 +101,41 @@ namespace JofferWebAPI.Migrations
                     b.ToTable("AccountDiciplines");
                 });
 
+            modelBuilder.Entity("JofferWebAPI.Models.Applicant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AboutMe")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("Avatar")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("EmploymentStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("SalaryMinimum")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Applicants");
+                });
+
             modelBuilder.Entity("JofferWebAPI.Models.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -103,36 +147,11 @@ namespace JofferWebAPI.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ComapnyUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image2Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image3Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image4Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image5Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InstaGramUrl")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LinkedInUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LogoUrl")
-                        .HasColumnType("text");
+                    b.Property<byte[]>("Logo")
+                        .HasColumnType("bytea");
 
                     b.Property<string>("RecruiterToken")
                         .IsRequired()
@@ -140,12 +159,6 @@ namespace JofferWebAPI.Migrations
 
                     b.Property<DateTime>("TokenActiveSince")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TwitterUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("YoutubeUrl")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -251,6 +264,12 @@ namespace JofferWebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ApplicantId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("ApplicantInterested")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("FinalMatch")
                         .HasColumnType("boolean");
 
@@ -259,12 +278,6 @@ namespace JofferWebAPI.Migrations
 
                     b.Property<int>("JobOfferId")
                         .HasColumnType("integer");
-
-                    b.Property<int>("TalentId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("TalentInterested")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -325,68 +338,6 @@ namespace JofferWebAPI.Migrations
                     b.ToTable("RecruiterToJobOffers");
                 });
 
-            modelBuilder.Entity("JofferWebAPI.Models.Talent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AboutMe")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DribbleUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EmploymentStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("GitHubUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image2Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image3Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image4Url")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image5Url")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LinkedInUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MediumUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PersonalUrl")
-                        .HasColumnType("text");
-
-                    b.Property<int>("SalaryMinimum")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("Talents");
-                });
-
             modelBuilder.Entity("JofferWebAPI.Models.AccountDicipline", b =>
                 {
                     b.HasOne("JofferWebAPI.Models.Account", "Account")
@@ -412,6 +363,17 @@ namespace JofferWebAPI.Migrations
                     b.Navigation("Dicipline");
 
                     b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("JofferWebAPI.Models.Applicant", b =>
+                {
+                    b.HasOne("JofferWebAPI.Models.Account", "Account")
+                        .WithMany("Applicants")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("JofferWebAPI.Models.Company", b =>
@@ -504,26 +466,15 @@ namespace JofferWebAPI.Migrations
                     b.Navigation("Recruiter");
                 });
 
-            modelBuilder.Entity("JofferWebAPI.Models.Talent", b =>
-                {
-                    b.HasOne("JofferWebAPI.Models.Account", "Account")
-                        .WithMany("Talents")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("JofferWebAPI.Models.Account", b =>
                 {
                     b.Navigation("AccountDiciplines");
 
+                    b.Navigation("Applicants");
+
                     b.Navigation("Companies");
 
                     b.Navigation("Recruiters");
-
-                    b.Navigation("Talents");
                 });
 
             modelBuilder.Entity("JofferWebAPI.Models.Company", b =>

@@ -13,7 +13,8 @@ namespace JofferWebAPI.Dtos
             Title = jobOffer.Title;
             FieldId = jobOffer.FieldId;
             Description = jobOffer.Description;
-            Salary = jobOffer.Salary;
+            MinSalary = jobOffer.MinSalary;
+            MaxSalary = jobOffer.MaxSalary;
             EmploymentStatus = jobOffer.EmploymentStatus;
             IsActive = jobOffer.IsActive;
         }
@@ -26,7 +27,9 @@ namespace JofferWebAPI.Dtos
 
         public string Description { get; set; } = null!;
 
-        public int Salary { get; set; }
+        public int MinSalary { get; set; }
+
+        public int MaxSalary { get; set; }
 
         public string EmploymentStatus { get; set; } = null!;
 

@@ -12,7 +12,8 @@ public partial class JobOffer
         Title = jobOfferDto.Title;
         FieldId = jobOfferDto.FieldId;
         Description = jobOfferDto.Description;
-        Salary = jobOfferDto.Salary;
+        MinSalary = jobOfferDto.MinSalary;
+        MaxSalary = jobOfferDto.MaxSalary;
         EmploymentStatus = jobOfferDto.EmploymentStatus;
         CompanyId = jobOfferDto.CompanyId;
         IsActive = jobOfferDto.IsActive;
@@ -27,7 +28,9 @@ public partial class JobOffer
 
     public string Description { get; set; } = null!;
 
-    public int Salary { get; set; }
+    public int MinSalary { get; set; }
+
+    public int MaxSalary { get; set; }
 
     public string EmploymentStatus { get; set; } = null!;
 
