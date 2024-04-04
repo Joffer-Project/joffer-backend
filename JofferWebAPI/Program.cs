@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-
+//TEST
 var builder = WebApplication.CreateBuilder(args);
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
