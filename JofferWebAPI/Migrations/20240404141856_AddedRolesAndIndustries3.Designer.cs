@@ -3,6 +3,7 @@ using System;
 using JofferWebAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JofferWebAPI.Migrations
 {
     [DbContext(typeof(DbContextRender))]
-    partial class DbContextRenderModelSnapshot : ModelSnapshot
+    [Migration("20240404141856_AddedRolesAndIndustries3")]
+    partial class AddedRolesAndIndustries3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,7 +415,7 @@ namespace JofferWebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("JofferWebAPI.Models.Industry", "Industry")
-                        .WithMany()
+                        .WithMany("AccountIndustries")
                         .HasForeignKey("IndustryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -431,7 +434,7 @@ namespace JofferWebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("JofferWebAPI.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("AccountRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -474,7 +477,7 @@ namespace JofferWebAPI.Migrations
             modelBuilder.Entity("JofferWebAPI.Models.JobOfferIndustries", b =>
                 {
                     b.HasOne("JofferWebAPI.Models.Industry", "Industry")
-                        .WithMany()
+                        .WithMany("JobOfferIndustries")
                         .HasForeignKey("IndustryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -499,7 +502,7 @@ namespace JofferWebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("JofferWebAPI.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("JobOfferRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -547,6 +550,13 @@ namespace JofferWebAPI.Migrations
                     b.Navigation("JobOffers");
                 });
 
+            modelBuilder.Entity("JofferWebAPI.Models.Industry", b =>
+                {
+                    b.Navigation("AccountIndustries");
+
+                    b.Navigation("JobOfferIndustries");
+                });
+
             modelBuilder.Entity("JofferWebAPI.Models.JobOffer", b =>
                 {
                     b.Navigation("JobOfferIndustries");
@@ -554,6 +564,13 @@ namespace JofferWebAPI.Migrations
                     b.Navigation("JobOfferRoles");
 
                     b.Navigation("JobOfferSwipes");
+                });
+
+            modelBuilder.Entity("JofferWebAPI.Models.Role", b =>
+                {
+                    b.Navigation("AccountRoles");
+
+                    b.Navigation("JobOfferRoles");
                 });
 #pragma warning restore 612, 618
         }

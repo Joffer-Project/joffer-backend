@@ -2,15 +2,14 @@
 
 namespace JofferWebAPI.Dtos
 {
-    public class DiciplineDto
+    public class RoleDto
     {
-        public DiciplineDto() { }
+        public RoleDto() { }
 
-        public DiciplineDto(Dicipline dicipline)
+        public RoleDto(Role dicipline)
         {
             Id = dicipline.Id;
             Name = dicipline.Name;
-            FieldId = dicipline.FieldId;
             IsActive = dicipline.IsActive;
         }
 

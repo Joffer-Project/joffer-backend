@@ -16,15 +16,14 @@ public partial class DbContextRender : DbContext
     }
 
     public DbSet<Account> Accounts { get; set; }
-    public DbSet<AccountDicipline> AccountDiciplines { get; set; }
+    public DbSet<JobOfferIndustries> JobOfferIndustries { get; set; }
+    public DbSet<JobOfferRoles> JobOfferRoles { get; set; }
+    public DbSet<AccountIndustries> AccountIndustries { get; set; }
+    public DbSet<AccountRoles> AccountRoles { get; set; }
     public DbSet<Talent> Talents { get; set; }
     public DbSet<Company> Companies { get; set; }
-    public DbSet<Dicipline> Diciplines { get; set; }
-    public DbSet<Field> Fields { get; set; }
     public DbSet<JobOffer> JobOffers { get; set; }
     public DbSet<JobOfferSwipe> JobOfferSwipes { get; set; }
-    public DbSet<Recruiter> Recruiters { get; set; }
-    public DbSet<RecruiterToJobOffer> RecruiterToJobOffers { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -38,11 +38,11 @@ public class Account
 
     public bool IsActive { get; set; }
 
-    public virtual ICollection<AccountDicipline> AccountDiciplines { get; set; } = new List<AccountDicipline>();
-
     public virtual ICollection<Talent> Talents { get; set; } = new List<Talent>();
 
     public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 
-    public virtual ICollection<Recruiter> Recruiters { get; set; } = new List<Recruiter>();
+    public List<AccountIndustries> AccountIndustries { get; set;}
+
+    public List<AccountRoles> AccountRoles { get; set; }
 }

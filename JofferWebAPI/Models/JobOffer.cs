@@ -40,9 +40,11 @@ public partial class JobOffer
 
     public virtual Company Company { get; set; } = null!;
 
-    public virtual Field Field { get; set; } = null!;
+    public virtual Industry Field { get; set; } = null!;
 
     public virtual ICollection<JobOfferSwipe> JobOfferSwipes { get; set; } = new List<JobOfferSwipe>();
 
-    public virtual ICollection<RecruiterToJobOffer> RecruiterToJobOffers { get; set; } = new List<RecruiterToJobOffer>();
+    public List<JobOfferIndustries> JobOfferIndustries { get; set; }
+
+    public List<JobOfferRoles> JobOfferRoles { get; set; }
 }

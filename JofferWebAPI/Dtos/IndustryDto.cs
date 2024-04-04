@@ -2,11 +2,11 @@
 
 namespace JofferWebAPI.Dtos
 {
-    public class FieldDto
+    public class IndustryDto
     {
-        public FieldDto() { }
+        public IndustryDto() { }
 
-        public FieldDto(Field field)
+        public IndustryDto(Industry field)
         {
             Id = field.Id;
             Name = field.Name;
