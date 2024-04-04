@@ -25,7 +25,7 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Account
         [HttpGet]
-        [Authorize(Roles = "Talent")]
+        //[Authorize(Roles = "Talent")]
         public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
         {
           if (_context.Accounts == null)
