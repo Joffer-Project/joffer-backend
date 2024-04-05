@@ -30,7 +30,7 @@ namespace JofferWebAPI.Controllers
           {
               return NotFound();
           }
-            return await _context.Talents.ToListAsync();
+          return await _context.Talents.ToListAsync();
         }
 
         // GET: api/Talent/5
@@ -41,14 +41,14 @@ namespace JofferWebAPI.Controllers
           {
               return NotFound();
           }
-            var applicant = await _context.Talents.FindAsync(id);
+          var applicant = await _context.Talents.FindAsync(id);
 
-            if (applicant == null)
-            {
-                return NotFound();
-            }
+          if (applicant == null)
+          {
+              return NotFound();
+          }
 
-            return applicant;
+          return applicant;
         }
 
         // PUT: api/Talent/5
@@ -90,16 +90,39 @@ namespace JofferWebAPI.Controllers
         // POST: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TalentDto>> PostTalent(TalentDto applicantDto)
+        public async Task<ActionResult<TalentDto>> PostTalent(TalentDto talentDto)
         {
           if (_context.Talents == null)
           {
               return Problem("Entity set 'MyDbContext.Talents'  is null.");
           }
-            _context.Talents.Add(new Talent(applicantDto));
-            await _context.SaveChangesAsync();
+          
+          AccountDto accountDto = new AccountDto();
+          accountDto.Name = talentDto.Name;
+          accountDto.Auth0Id = talentDto.Auth0Id;
+          accountDto.Email = talentDto.Email;
+          accountDto.IsPremium = talentDto.IsPremium;
+          accountDto.IsActive = true;
+          accountDto.AccountType = "Applicant";
+          accountDto.Password = "";
+          
+          _context.Accounts.Add(new Account(accountDto));
+          
+          await _context.SaveChangesAsync();
+          
+          var recentlyCreatedAccount = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
 
-            return CreatedAtAction("GetTalent", new { id = applicantDto.Id }, applicantDto);
+          if (recentlyCreatedAccount == null)
+          {
+              return Problem("Failed to retrieve recently created account.");
+          }
+
+          talentDto.AccountId = recentlyCreatedAccount.Id;
+          _context.Talents.Add(new Talent(talentDto));
+          
+          await _context.SaveChangesAsync();
+
+          return CreatedAtAction("GetTalent", new { id = talentDto.Id }, talentDto);
         }
 
         // DELETE: api/Talent/5

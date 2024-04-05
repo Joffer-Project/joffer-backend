@@ -10,9 +10,11 @@ public partial class Talent
 
     }
 
-    public Talent(TalentDto applicantDto) { 
+    public Talent(TalentDto applicantDto)
+    {
         AccountId = applicantDto.AccountId;
         AboutMe = applicantDto.AboutMe;
+        EmploymentStatus = applicantDto.EmploymentStatus;
         SalaryMinimum = applicantDto.SalaryMinimum;
         AvatarUrl = applicantDto.AvatarUrl;
         IsActive = applicantDto.IsActive;
