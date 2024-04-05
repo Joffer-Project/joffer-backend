@@ -30,7 +30,9 @@ namespace JofferWebAPI.Controllers
           {
               return NotFound();
           }
-          return await _context.Talents.ToListAsync();
+          return await _context.Talents
+              .Where(t => t.IsActive == true)
+              .ToListAsync();
         }
 
         // GET: api/Talent/5
@@ -87,6 +89,25 @@ namespace JofferWebAPI.Controllers
           await _context.SaveChangesAsync();
 
           return CreatedAtAction("GetTalent", new { id = talentDto.Id }, talentDto);
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTalent(int id)
+        {
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.Id == id);
+
+            if (talent == null)
+            {
+                return Problem("Talent does not exist.");
+            }
+            
+            talent.IsActive = false;
+            
+            _context.Entry(talent).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+            
+            return NoContent();
         }
     }
 }
