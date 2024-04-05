@@ -51,42 +51,6 @@ namespace JofferWebAPI.Controllers
           return applicant;
         }
 
-        // PUT: api/Talent/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTalent(int id, TalentDto applicantDto)
-        {
-            Talent applicant = new(applicantDto)
-            {
-                Id = id,
-            };
-
-            if (id != applicant.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(applicant).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TalentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -123,31 +87,6 @@ namespace JofferWebAPI.Controllers
           await _context.SaveChangesAsync();
 
           return CreatedAtAction("GetTalent", new { id = talentDto.Id }, talentDto);
-        }
-
-        // DELETE: api/Talent/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTalent(int id)
-        {
-            if (_context.Talents == null)
-            {
-                return NotFound();
-            }
-            var applicant = await _context.Talents.FindAsync(id);
-            if (applicant == null)
-            {
-                return NotFound();
-            }
-
-            _context.Talents.Remove(applicant);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool TalentExists(int id)
-        {
-            return (_context.Talents?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
