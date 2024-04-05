@@ -107,6 +107,19 @@ namespace JofferWebAPI.Controllers
 
             await _context.SaveChangesAsync();
             
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == talent.AccountId);
+            
+            if (account == null)
+            {
+                return Problem("Account connected to the talent does not exist.");
+            }
+
+            account.IsActive = false;
+            
+            _context.Entry(account).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+            
             return NoContent();
         }
     }
