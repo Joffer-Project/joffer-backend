@@ -9,12 +9,12 @@ namespace JofferWebAPI.Dtos
         public JobOfferDto(JobOffer jobOffer)
         {
             Id = jobOffer.Id;
-            CompanyId = jobOffer.CompanyId;
             Title = jobOffer.Title;
             Description = jobOffer.Description;
             MinSalary = jobOffer.MinSalary;
             MaxSalary = jobOffer.MaxSalary;
             EmploymentStatus = jobOffer.EmploymentStatus;
+            CompanyId = jobOffer.CompanyId;
             IsActive = jobOffer.IsActive;
         }
 
