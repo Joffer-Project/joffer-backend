@@ -22,8 +22,6 @@ namespace JofferWebAPI.Dtos
 
         public string Title { get; set; } = null!;
 
-        public int FieldId { get; set; }
-
         public string Description { get; set; } = null!;
 
         public int MinSalary { get; set; }
