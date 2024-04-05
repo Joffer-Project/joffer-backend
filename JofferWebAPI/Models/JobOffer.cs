@@ -10,7 +10,6 @@ public partial class JobOffer
     public JobOffer(JobOfferDto jobOfferDto)
     {
         Title = jobOfferDto.Title;
-        FieldId = jobOfferDto.FieldId;
         Description = jobOfferDto.Description;
         MinSalary = jobOfferDto.MinSalary;
         MaxSalary = jobOfferDto.MaxSalary;
@@ -23,8 +22,6 @@ public partial class JobOffer
     public int Id { get; set; }
 
     public string Title { get; set; } = null!;
-
-    public int FieldId { get; set; }
 
     public string Description { get; set; } = null!;
 
@@ -39,8 +36,6 @@ public partial class JobOffer
     public bool IsActive { get; set; }
 
     public virtual Company Company { get; set; } = null!;
-
-    public virtual Industry Field { get; set; } = null!;
 
     public virtual ICollection<JobOfferSwipe> JobOfferSwipes { get; set; } = new List<JobOfferSwipe>();
 

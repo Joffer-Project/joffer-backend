@@ -3,6 +3,7 @@ using System;
 using JofferWebAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JofferWebAPI.Migrations
 {
     [DbContext(typeof(DbContextRender))]
-    partial class DbContextRenderModelSnapshot : ModelSnapshot
+    [Migration("20240404144519_Initial2.0")]
+    partial class Initial20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,6 +217,9 @@ namespace JofferWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("FieldId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -230,6 +236,8 @@ namespace JofferWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("FieldId");
 
                     b.ToTable("JobOffers");
                 });
@@ -455,7 +463,15 @@ namespace JofferWebAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("JofferWebAPI.Models.Industry", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Company");
+
+                    b.Navigation("Field");
                 });
 
             modelBuilder.Entity("JofferWebAPI.Models.JobOfferIndustries", b =>

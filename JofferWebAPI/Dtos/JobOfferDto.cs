@@ -11,7 +11,6 @@ namespace JofferWebAPI.Dtos
             Id = jobOffer.Id;
             CompanyId = jobOffer.CompanyId;
             Title = jobOffer.Title;
-            FieldId = jobOffer.FieldId;
             Description = jobOffer.Description;
             MinSalary = jobOffer.MinSalary;
             MaxSalary = jobOffer.MaxSalary;

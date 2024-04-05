@@ -3,6 +3,7 @@ using System;
 using JofferWebAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JofferWebAPI.Migrations
 {
     [DbContext(typeof(DbContextRender))]
-    partial class DbContextRenderModelSnapshot : ModelSnapshot
+    [Migration("20240405084131_RemovedIndustry3")]
+    partial class RemovedIndustry3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -467,7 +470,7 @@ namespace JofferWebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("JofferWebAPI.Models.JobOffer", "JobOffer")
-                        .WithMany("JobOfferIndustries")
+                        .WithMany()
                         .HasForeignKey("JobOfferId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -536,8 +539,6 @@ namespace JofferWebAPI.Migrations
 
             modelBuilder.Entity("JofferWebAPI.Models.JobOffer", b =>
                 {
-                    b.Navigation("JobOfferIndustries");
-
                     b.Navigation("JobOfferRoles");
 
                     b.Navigation("JobOfferSwipes");
