@@ -47,6 +47,13 @@ namespace JofferWebAPI.Controllers
                 return Problem($"Job offer with id: {jobOfferId} does not exists.");
             }
             
+            var existingJobOfferSwipe = await _context.JobOfferSwipes.FirstOrDefaultAsync(js => js.TalentId == talent.Id && js.JobOfferId == jobOfferId);
+            
+            if (existingJobOfferSwipe != null)
+            {
+                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {loggedInUser.Auth0Id}");
+            }
+            
             JobOfferSwipe jobOfferSwipe = new JobOfferSwipe();
             jobOfferSwipe.JobOfferId = jobOfferId;
             jobOfferSwipe.TalentId = talent.Id;
@@ -118,6 +125,117 @@ namespace JofferWebAPI.Controllers
             }
 
             jobOfferSwipe.FinalMatch = true;
+            
+            _context.Entry(jobOfferSwipe).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        
+        [HttpPost("/Dislike/{jobOfferId}")]
+        public async Task<ActionResult<IEnumerable<JobOfferSwipe>>> DislikeCompany(int jobOfferId)
+        {
+            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+
+            if (loggedInUser == null)
+            {
+                return Problem($"Logged in user with auth0Id: {loggedInUserSub} does not exists.");
+            }
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == loggedInUser.Id);
+
+            if (talent == null)
+            {
+                return Problem($"Logged in user with auth0Id: {loggedInUserSub} is not a talent.");
+            }
+            
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id: {jobOfferId} does not exists.");
+            }
+            
+            var existingJobOfferSwipe = await _context.JobOfferSwipes.FirstOrDefaultAsync(js => js.TalentId == talent.Id && js.JobOfferId == jobOfferId);
+
+            if (existingJobOfferSwipe != null)
+            {
+                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {loggedInUser.Auth0Id}");
+            }
+            
+            JobOfferSwipe jobOfferSwipe = new JobOfferSwipe();
+            jobOfferSwipe.JobOfferId = jobOfferId;
+            jobOfferSwipe.TalentId = talent.Id;
+            jobOfferSwipe.TalentInterested = false;
+            jobOfferSwipe.IsActive = true;
+            jobOfferSwipe.FinalMatch = false;
+            
+            _context.JobOfferSwipes.Add(jobOfferSwipe);
+            
+            await _context.SaveChangesAsync();
+            
+            return NoContent();
+        }
+        
+        [HttpPut("/Dislike/{jobOfferId}/Talent/{auth0Id}")]
+        public async Task<ActionResult<IEnumerable<Talent>>> DislikeTalent(string auth0Id, int jobOfferId)
+        {
+            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+
+            if (loggedInUser == null)
+            {
+                return Problem($"Logged in user with auth0Id: {auth0Id} does not exists.");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == loggedInUser.Id);
+
+            if (company == null)
+            {
+                return Problem($"Logged in user with auth0Id: {auth0Id} is not a company.");
+            }
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == auth0Id);
+            
+            if (account == null)
+            {
+                return Problem($"Account with auth0Id: {auth0Id} does not exists.");
+            }
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+
+            if (talent == null)
+            {
+                return Problem($"Talent with accountId: {account.Id} does not exists.");
+            }
+            
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id: {jobOfferId} does not exists.");
+            }
+
+            if (jobOffer.CompanyId != company.Id)
+            {
+                Problem("This is not a job offer from this company.");
+            }
+
+            var jobOfferSwipe = await _context.JobOfferSwipes
+                .Where(js => js.TalentId == talent.Id)
+                .Where(js => js.JobOfferId == jobOfferId)
+                .FirstOrDefaultAsync();
+
+            if (jobOfferSwipe == null)
+            {
+                return Problem(
+                    $"Job offer swipe does not exists. In other words, the talent (auth0Id: {auth0Id}) has not swiped the job offer with id: {jobOfferId}");
+            }
+
+            jobOfferSwipe.TalentInterested = false;
+            jobOfferSwipe.FinalMatch = false;
             
             _context.Entry(jobOfferSwipe).State = EntityState.Modified;
 
