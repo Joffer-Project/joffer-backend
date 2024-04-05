@@ -11,7 +11,7 @@ using JofferWebAPI.Dtos;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]" + "s")]
     [ApiController]
     public class TalentController : ControllerBase
     {
