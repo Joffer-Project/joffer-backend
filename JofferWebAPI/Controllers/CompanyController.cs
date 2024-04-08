@@ -194,5 +194,15 @@ namespace JofferWebAPI.Controllers
 
             return NoContent();
         }
+        
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<IEnumerable<Company>>> GetAllCompanies()
+        {
+            if (_context.Companies == null)
+            {
+                return NotFound();
+            }
+            return await _context.Companies.ToListAsync();
+        }
     }
 }
