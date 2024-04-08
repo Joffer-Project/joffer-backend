@@ -23,7 +23,7 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Company
-        [HttpGet]
+        [HttpGet("OnlyFORDEBUGGING")]
         public async Task<ActionResult<IEnumerable<Company>>> GetCompanies()
         {
           if (_context.Companies == null)
@@ -50,81 +50,43 @@ namespace JofferWebAPI.Controllers
 
             return company;
         }
-
-        // PUT: api/Company/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, CompanyDto companyDto)
-        {
-            Company company = new(companyDto)
-            {
-                Id = id
-            };
-
-            if (id != company.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(company).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        
         // POST: api/Company
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CompanyDto>> PostCompany(CompanyDto companyDto)
+        public async Task<ActionResult<TalentDto>> PostCompany(CompanyDto companyDto)
         {
             if (_context.Companies == null)
             {
                 return Problem("Entity set 'MyDbContext.Companies'  is null.");
             }
+          
+            AccountDto accountDto = new AccountDto();
+            accountDto.Name = companyDto.Name;
+            accountDto.Auth0Id = companyDto.Auth0Id;
+            accountDto.Email = companyDto.Email;
+            accountDto.IsPremium = companyDto.IsPremium;
+            accountDto.IsActive = true;
+            accountDto.AccountType = "Company";
+            accountDto.Password = "";
+          
+            _context.Accounts.Add(new Account(accountDto));
+          
+            await _context.SaveChangesAsync();
+          
+            var recentlyCreatedAccount = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
 
+            if (recentlyCreatedAccount == null)
+            {
+                return Problem("Failed to retrieve recently created account.");
+            }
+
+            companyDto.AccountId = recentlyCreatedAccount.Id;
             _context.Companies.Add(new Company(companyDto));
+          
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCompany", new { id = companyDto.Id }, companyDto);
-        }
-
-
-        // DELETE: api/Company/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany(int id)
-        {
-            if (_context.Companies == null)
-            {
-                return NotFound();
-            }
-            var company = await _context.Companies.FindAsync(id);
-            if (company == null)
-            {
-                return NotFound();
-            }
-
-            _context.Companies.Remove(company);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool CompanyExists(int id)
-        {
-            return (_context.Companies?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
