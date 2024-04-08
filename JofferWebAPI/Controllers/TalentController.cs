@@ -12,7 +12,7 @@ using Microsoft.Build.Framework;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("[controller]" + "s")]
+    [Route("")]
     [ApiController]
     public class TalentController : ControllerBase
     {
@@ -24,8 +24,8 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Talent
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Talent>>> GetTalents()
+        [HttpGet("TalentONLYFORDEBUG")]
+        public async Task<ActionResult<IEnumerable<Talent>>> GetTalent()
         {
           if (_context.Talents == null)
           {
@@ -35,9 +35,56 @@ namespace JofferWebAPI.Controllers
               .Where(t => t.IsActive == true)
               .ToListAsync();
         }
+        
+        // GET: api/Talent
+        [HttpGet("Talents")]
+        public async Task<ActionResult<IEnumerable<TalentWithJobOfferId>>> GetTalents()
+        {
+            string accountSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {accountSub} not found!");
+            }
+            
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+
+            if (company == null)
+            {
+                return Problem($"Company not found. (No company bindend to the account with Auth0Id {account.Auth0Id}. Make sure to activate this controller with a company account.)");
+            }
+            
+            if (_context.Talents == null)
+            {
+                return NotFound();
+            }
+
+            var companyJobOffers =  _context.JobOffers.Where(jo => jo.CompanyId == company.Id);
+
+            var jobOfferSwipesTalentInterested = _context.JobOfferSwipes
+                .Where(jos => jos.TalentInterested == true)
+                .Where(jos => jos.FinalMatch == false)
+                .Where(jos => jos.IsActive == true)
+                .Join(companyJobOffers,
+                    jos => jos.JobOfferId,
+                    jo => jo.Id,
+                    (jos, jo) => jos)
+                .ToList();
+
+            var talentsInterested = _context.Talents
+                .ToList()
+                .Join(jobOfferSwipesTalentInterested,
+                    talent => talent.Id,
+                    jos => jos.TalentId,
+                    (talent, josti) => new { TalentWithJobOfferId = talent, JobOfferId = josti.JobOfferId })
+                        .ToList();
+
+            return Ok(talentsInterested);
+        }
 
         // GET: api/Talent/5
-        [HttpGet("{id}")]
+        [HttpGet("Talent/{id}")]
         public async Task<ActionResult<Talent>> GetTalent(int id)
         {
           if (_context.Talents == null)
@@ -56,7 +103,7 @@ namespace JofferWebAPI.Controllers
 
         // POST: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("Talent")]
         public async Task<ActionResult<TalentDto>> PostTalent(TalentDto talentDto)
         {
           if (_context.Talents == null)
@@ -94,7 +141,7 @@ namespace JofferWebAPI.Controllers
         
         // PUT: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut]
+        [HttpPut("Talent")]
         public async Task<ActionResult<TalentDto>> PutTalent(TalentDto talentDto)
         {
             string accountSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
@@ -174,7 +221,7 @@ namespace JofferWebAPI.Controllers
             return NoContent();
         }
         
-        [HttpDelete("{id}")]
+        [HttpDelete("Talent/{id}")]
         public async Task<IActionResult> DeleteTalent(int id)
         {
             var talent = await _context.Talents.FirstOrDefaultAsync(t => t.Id == id);
