@@ -91,15 +91,27 @@ namespace JofferWebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutJobOffer(int id, JobOfferDto jobOfferDto)
         {
-            JobOffer jobOffer = new(jobOfferDto)
-            {
-                Id = id,
-            };
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
-            if (id != jobOffer.Id)
+            if (userSubClaim == null)
             {
-                return BadRequest();
+                return BadRequest("User identifier claim not found.");
             }
+
+            string userSub = userSubClaim.Value;
+
+            int accountId = await GetAccountIdByAuth0Id(userSub); // Assuming userSub contains the user's identifier
+
+            var jobOffer = await _context.JobOffers
+                .Include(j => j.Company)
+                .FirstOrDefaultAsync(j => j.Id == id && j.Company.AccountId == accountId);
+
+            if (jobOffer == null)
+            {
+                return NotFound("Job offer not found.");
+            }
+
+            jobOffer.Title = jobOfferDto.Title;
 
             _context.Entry(jobOffer).State = EntityState.Modified;
 
