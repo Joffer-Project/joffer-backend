@@ -94,21 +94,22 @@ namespace JofferWebAPI.Controllers
         
         // PUT: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TalentDto>> PutTalent(int id, TalentDto talentDto)
+        [HttpPut]
+        public async Task<ActionResult<TalentDto>> PutTalent(TalentDto talentDto)
         {
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.Id == id);
-
-            if (talent == null)
-            {
-                return Problem($"Talent with id {id} not found. (Do not enter the accountId, but the talentId instead.");
-            }
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == talent.AccountId);
+            string accountSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountSub);
             
             if (account == null)
             {
-                return Problem("Account not found!");
+                return Problem($"Account with Auth0Id {accountSub} not found!");
+            }
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+
+            if (talent == null)
+            {
+                return Problem($"Talent not found. (No talent bindend to the account.)");
             }
 
             talent.AboutMe = talentDto.AboutMe;
@@ -134,7 +135,7 @@ namespace JofferWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (_context.Talents.FirstOrDefaultAsync(t=>t.Id == id) == null)
+                if (talent == null)
                 {
                     return NotFound();
                 }
@@ -160,7 +161,7 @@ namespace JofferWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (_context.Accounts.FirstOrDefaultAsync(a=>a.Id == talent.AccountId) == null)
+                if (account == null)
                 {
                     return NotFound();
                 }
