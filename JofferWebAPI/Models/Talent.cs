@@ -10,11 +10,22 @@ public partial class Talent
 
     }
 
-    public Talent(TalentDto applicantDto) { 
+    public Talent(TalentDto applicantDto)
+    {
         AccountId = applicantDto.AccountId;
         AboutMe = applicantDto.AboutMe;
+        EmploymentStatus = applicantDto.EmploymentStatus;
         SalaryMinimum = applicantDto.SalaryMinimum;
         AvatarUrl = applicantDto.AvatarUrl;
+        Image2Url = applicantDto.Image2Url;
+        Image3Url = applicantDto.Image3Url;
+        Image4Url = applicantDto.Image4Url;
+        Image5Url = applicantDto.Image5Url;
+        GitHubUrl = applicantDto.GitHubUrl;
+        LinkedInUrl = applicantDto.LinkedInUrl;
+        MediumUrl = applicantDto.MediumUrl;
+        DribbleUrl = applicantDto.DribbleUrl;
+        PersonalUrl = applicantDto.PersonalUrl;
         IsActive = applicantDto.IsActive;
     }
 
