@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
 using JofferWebAPI.Dtos;
+using NuGet.Versioning;
 
 namespace JofferWebAPI.Controllers
 {
@@ -57,15 +58,29 @@ namespace JofferWebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobOffer>> GetJobOffer(int id)
         {
-          if (_context.JobOffers == null)
-          {
-              return NotFound();
-          }
-            var jobOffer = await _context.JobOffers.FindAsync(id);
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                return BadRequest("User identifier claim not found.");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            int accountId = await GetAccountIdByAuth0Id(userSub);
+
+            if (accountId == 0)
+            {
+                return NotFound("Account not found.");
+            }
+
+            // Check if the job offer exists and is associated with the authenticated user's company
+            var jobOffer = await _context.JobOffers
+                .FirstOrDefaultAsync(j => j.Company.AccountId == accountId && j.Id == id);
 
             if (jobOffer == null)
             {
-                return NotFound();
+                return NotFound("Job offer not found.");
             }
 
             return jobOffer;
