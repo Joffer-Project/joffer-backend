@@ -22,19 +22,6 @@ namespace JofferWebAPI.Controllers
         {
             _context = context;
         }
-
-        // GET: api/Talent
-        [HttpGet("TalentONLYFORDEBUG")]
-        public async Task<ActionResult<IEnumerable<Talent>>> GetTalent()
-        {
-          if (_context.Talents == null)
-          {
-              return NotFound();
-          }
-          return await _context.Talents
-              .Where(t => t.IsActive == true)
-              .ToListAsync();
-        }
         
         // GET: api/Talent
         [HttpGet("Talents")]

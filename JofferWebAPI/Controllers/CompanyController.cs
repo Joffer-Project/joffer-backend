@@ -22,25 +22,15 @@ namespace JofferWebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Company
-        [HttpGet("OnlyFORDEBUGGING")]
-        public async Task<ActionResult<IEnumerable<Company>>> GetCompanies()
-        {
-          if (_context.Companies == null)
-          {
-              return NotFound();
-          }
-            return await _context.Companies.ToListAsync();
-        }
-
         // GET: api/Company/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Company>> GetCompany(int id)
         {
-          if (_context.Companies == null)
-          {
-              return NotFound();
-          }
+            if (_context.Companies == null)
+            {
+                return NotFound();
+            }
+
             var company = await _context.Companies.FindAsync(id);
 
             if (company == null)
@@ -50,17 +40,17 @@ namespace JofferWebAPI.Controllers
 
             return company;
         }
-        
+
         // POST: api/Company
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TalentDto>> PostCompany(CompanyDto companyDto)
+        public async Task<ActionResult<CompanyDto>> PostCompany(CompanyDto companyDto)
         {
             if (_context.Companies == null)
             {
                 return Problem("Entity set 'MyDbContext.Companies'  is null.");
             }
-          
+
             AccountDto accountDto = new AccountDto();
             accountDto.Name = companyDto.Name;
             accountDto.Auth0Id = companyDto.Auth0Id;
@@ -69,12 +59,13 @@ namespace JofferWebAPI.Controllers
             accountDto.IsActive = true;
             accountDto.AccountType = "Company";
             accountDto.Password = "";
-          
+
             _context.Accounts.Add(new Account(accountDto));
-          
+
             await _context.SaveChangesAsync();
-          
-            var recentlyCreatedAccount = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
+
+            var recentlyCreatedAccount =
+                await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
 
             if (recentlyCreatedAccount == null)
             {
@@ -83,10 +74,125 @@ namespace JofferWebAPI.Controllers
 
             companyDto.AccountId = recentlyCreatedAccount.Id;
             _context.Companies.Add(new Company(companyDto));
-          
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCompany", new { id = companyDto.Id }, companyDto);
+        }
+
+        // PUT: api/Company
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut]
+        public async Task<ActionResult<CompanyDto>> PutCompany(CompanyDto companyDto)
+        {
+            string accountSub = User.FindFirst(c =>
+                c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {accountSub} not found!");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+
+            if (company == null)
+            {
+                return Problem($"Company not found. (No company bindend to the account.)");
+            }
+
+            company.LogoUrl = companyDto.LogoUrl;
+            company.Description = companyDto.Description;
+            company.Image2Url = companyDto.Image2Url;
+            company.Image3Url = companyDto.Image3Url;
+            company.Image4Url = companyDto.Image4Url;
+            company.Image5Url = companyDto.Image5Url;
+            company.ComapnyUrl = companyDto.ComapnyUrl;
+            company.LinkedInUrl = companyDto.LinkedInUrl;
+            company.YoutubeUrl = companyDto.YoutubeUrl;
+            company.InstaGramUrl = companyDto.InstaGramUrl;
+            company.TwitterUrl = companyDto.TwitterUrl;
+            company.IsActive = companyDto.IsActive;
+            company.RecruiterToken = "000000";
+            company.TokenActiveSince = (DateTime.Now).ToUniversalTime();
+
+            _context.Entry(company).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            account.Auth0Id = companyDto.Auth0Id;
+            account.Email = companyDto.Email;
+            account.Password = "NO PASSWORD";
+            account.Name = companyDto.Name;
+            account.AccountType = "Company";
+            account.IsPremium = companyDto.IsPremium;
+            account.IsActive = companyDto.IsActive;
+
+            _context.Entry(account).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (account == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCompany(int id)
+        {
+            var company = await _context.Companies.FirstOrDefaultAsync(t => t.Id == id);
+
+            if (company == null)
+            {
+                return Problem("Company does not exist.");
+            }
+
+            company.IsActive = false;
+
+            _context.Entry(company).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == company.AccountId);
+
+            if (account == null)
+            {
+                return Problem("Account connected to the company does not exist.");
+            }
+
+            account.IsActive = false;
+
+            _context.Entry(account).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
