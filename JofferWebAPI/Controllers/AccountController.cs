@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -22,11 +22,34 @@ namespace JofferWebAPI.Controllers
         {
             _context = context;
         }
+        
+        // GET: api/Account
+        [HttpGet("Account")]
+        public async Task<ActionResult<Account>> GetAccount()
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            return account;
+        }
 
         // GET: api/Account
-        [HttpGet]
-        //[Authorize(Roles = "Talent")]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
+        [HttpGet("Accounts/GetAll")]
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAllAccounts()
         {
           if (_context.Accounts == null)
           {
@@ -37,7 +60,7 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Account/5
-        [HttpGet("{id}")]
+        [HttpGet("Account/{id}")]
         public async Task<ActionResult<Account>> GetAccount(int id)
         {
           if (_context.Accounts == null)
@@ -52,83 +75,6 @@ namespace JofferWebAPI.Controllers
             }
 
             return account;
-        }
-
-        // PUT: api/Account/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(int id, AccountDto accountDto)
-        {
-            Account account = new(accountDto)
-            {
-                Id = id
-            };
-
-            if (id != account.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(account).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Account
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<AccountDto>> PostAccount(AccountDto accountDto)
-        {
-          if (_context.Accounts == null)
-          {
-              return Problem("Entity set 'MyDbContext.Accounts'  is null.");
-          }
-          
-          _context.Accounts.Add(new Account(accountDto));
-          await _context.SaveChangesAsync();
-
-          return CreatedAtAction("GetAccount", new { id = accountDto.Id }, accountDto);
-        }
-
-        // DELETE: api/Account/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(int id)
-        {
-            if (_context.Accounts == null)
-            {
-                return NotFound();
-            }
-            var account = await _context.Accounts.FindAsync(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
-
-            _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool AccountExists(int id)
-        {
-            return (_context.Accounts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
