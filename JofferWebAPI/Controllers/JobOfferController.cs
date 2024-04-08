@@ -23,6 +23,17 @@ namespace JofferWebAPI.Controllers
             _context = context;
         }
 
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<IEnumerable<JobOffer>>> GetAll()
+        {
+            if (_context.JobOffers == null)
+            {
+                return NotFound();
+            }
+            return await _context.JobOffers.ToListAsync();
+        }
+
+
         // GET: api/JobOffers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffers()
