@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Models;
 using JofferWebAPI.Dtos;
+using Microsoft.Build.Framework;
 
 namespace JofferWebAPI.Controllers
 {
@@ -89,6 +90,87 @@ namespace JofferWebAPI.Controllers
           await _context.SaveChangesAsync();
 
           return CreatedAtAction("GetTalent", new { id = talentDto.Id }, talentDto);
+        }
+        
+        // PUT: api/Talent
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TalentDto>> PutTalent(int id, TalentDto talentDto)
+        {
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.Id == id);
+
+            if (talent == null)
+            {
+                return Problem($"Talent with id {id} not found. (Do not enter the accountId, but the talentId instead.");
+            }
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == talent.AccountId);
+            
+            if (account == null)
+            {
+                return Problem("Account not found!");
+            }
+
+            talent.AboutMe = talentDto.AboutMe;
+            talent.EmploymentStatus = talentDto.EmploymentStatus;
+            talent.SalaryMinimum = talentDto.SalaryMinimum;
+            talent.AvatarUrl = talentDto.AvatarUrl;
+            talent.Image2Url = talentDto.Image2Url;
+            talent.Image3Url = talentDto.Image3Url;
+            talent.Image4Url = talentDto.Image4Url;
+            talent.Image5Url = talentDto.Image5Url;
+            talent.DribbleUrl = talentDto.DribbleUrl;
+            talent.LinkedInUrl = talentDto.LinkedInUrl;
+            talent.MediumUrl = talentDto.MediumUrl;
+            talent.PersonalUrl = talentDto.PersonalUrl;
+            talent.GitHubUrl = talentDto.GitHubUrl;
+            talent.IsActive = talentDto.IsActive;
+            
+            _context.Entry(talent).State = EntityState.Modified;
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (_context.Talents.FirstOrDefaultAsync(t=>t.Id == id) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            
+            account.Auth0Id = talentDto.Auth0Id;
+            account.Email = talentDto.Email;
+            account.Password = "NO PASSWORD";
+            account.Name = talentDto.Name;
+            account.AccountType = "Applicant";
+            account.IsPremium = talentDto.IsPremium;
+            account.IsActive = talentDto.IsActive;
+            
+            _context.Entry(account).State = EntityState.Modified;
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (_context.Accounts.FirstOrDefaultAsync(a=>a.Id == talent.AccountId) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
         
         [HttpDelete("{id}")]
