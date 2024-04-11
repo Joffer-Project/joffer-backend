@@ -25,60 +25,47 @@ namespace JofferWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Role>>> GetRole()
         {
-          if (_context.Role == null)
-          {
-              return NotFound();
-          }
-            return await _context.Role.ToListAsync();
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var accountRoles = _context.AccountRoles
+                .Where(ar => ar.AccountId == account.Id)
+                .Where(ar => ar.IsActive == true)
+                .ToList();
+            
+            var roles = accountRoles
+                .Join(_context.Roles,
+                    ar => ar.RoleId,
+                    r => r.Id,
+                    (ar, r) => r) 
+                .ToList();
+            
+            return roles;
         }
-
-        // GET: api/Role/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Role>> GetRole(int id)
+        
+        // GET: api/Role
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<IEnumerable<Role>>> GetAllRoles()
         {
-          if (_context.Role == null)
-          {
-              return NotFound();
-          }
-            var role = await _context.Role.FindAsync(id);
-
-            if (role == null)
+            if (_context.Role == null)
             {
                 return NotFound();
             }
-
-            return role;
-        }
-
-        // PUT: api/Role/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(int id, Role role)
-        {
-            if (id != role.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(role).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return await _context.Role.ToListAsync();
         }
 
         // POST: api/Role
@@ -95,24 +82,78 @@ namespace JofferWebAPI.Controllers
 
             return CreatedAtAction("GetRole", new { id = role.Id }, role);
         }
-
-        // DELETE: api/Role/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
+        
+        [HttpPost("{roleId}")]
+        public async Task<ActionResult<Role>> PostRoleToAccount(int roleId)
         {
-            if (_context.Role == null)
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
             {
-                return NotFound();
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
             }
-            var role = await _context.Role.FindAsync(id);
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            var role = _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+
             if (role == null)
             {
-                return NotFound();
+                return Problem($"Role with id {roleId} not found!");
             }
-
-            _context.Role.Remove(role);
+            
+            AccountRoles accountRoles = new AccountRoles();
+            accountRoles.AccountId = account.Id;
+            accountRoles.RoleId = roleId;
+            accountRoles.IsActive = true;
+            
+            _context.AccountRoles.Add(accountRoles);
             await _context.SaveChangesAsync();
 
+            return Ok("Success!");
+        }
+        
+        [HttpDelete("{roleId}")]
+        public async Task<IActionResult> DeleteRoleFromAccount(int roleId)
+        {
+            //TODO: nog fixen als er twee rows zijn met dezelfde account- en roleid.
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            AccountRoles accountRole = _context.AccountRoles.FirstOrDefault(ar => ar.AccountId == account.Id && ar.RoleId == roleId);
+
+            if (accountRole == null)
+            {
+                return Problem("Account role does not exists.");
+            }
+            
+            accountRole.IsActive = false;
+            _context.Entry(accountRole).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+            
             return NoContent();
         }
 
