@@ -58,23 +58,5 @@ namespace JofferWebAPI.Controllers
             // return await _context.Accounts.ToListAsync();
             return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
         }
-
-        // GET: api/Account/5
-        [HttpGet("Account/{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
-        {
-          if (_context.Accounts == null)
-          {
-              return NotFound();
-          }
-            var account = await _context.Accounts.FindAsync(id);
-
-            if (account == null)
-            {
-                return NotFound();
-            }
-
-            return account;
-        }
     }
 }

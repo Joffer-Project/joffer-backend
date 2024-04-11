@@ -243,5 +243,12 @@ namespace JofferWebAPI.Controllers
 
             return NoContent();
         }
+        
+        [HttpGet("/Matches")]
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAllAccounts()
+        {
+            //TODO: add matches.
+            return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
+        }
     }
 }
