@@ -146,7 +146,7 @@ namespace JofferWebAPI.Controllers
                 .Where(ar => ar.RoleId == roleId)
                 .ToList();
 
-            if (accountRoles == null)
+            if (accountRoles.Count == 0)
             {
                 return Problem("Account role(s) does not exists.");
             }
