@@ -10,7 +10,7 @@ using JofferWebAPI.Models;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class RoleController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Role
-        [HttpGet]
+        [HttpGet("/Roles/Account")]
         public async Task<ActionResult<IEnumerable<Role>>> GetRole()
         {
             var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
@@ -58,7 +58,7 @@ namespace JofferWebAPI.Controllers
         }
         
         // GET: api/Role
-        [HttpGet("GetAll")]
+        [HttpGet("/Roles/GetAll")]
         public async Task<ActionResult<IEnumerable<Role>>> GetAllRoles()
         {
             if (_context.Role == null)
@@ -70,7 +70,7 @@ namespace JofferWebAPI.Controllers
 
         // POST: api/Role
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("Role")]
         public async Task<ActionResult<Role>> PostRole(Role role)
         {
           if (_context.Role == null)
@@ -83,7 +83,7 @@ namespace JofferWebAPI.Controllers
             return CreatedAtAction("GetRole", new { id = role.Id }, role);
         }
         
-        [HttpPost("{roleId}")]
+        [HttpPost("Role/Account/{roleId}")]
         public async Task<ActionResult<Role>> PostRoleToAccount(int roleId)
         {
             var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
@@ -121,10 +121,9 @@ namespace JofferWebAPI.Controllers
             return Ok("Success!");
         }
         
-        [HttpDelete("{roleId}")]
+        [HttpDelete("Role/Account/{roleId}")]
         public async Task<IActionResult> DeleteRoleFromAccount(int roleId)
         {
-            //TODO: nog fixen als er twee rows zijn met dezelfde account- en roleid.
             var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
             if (userSubClaim == null)
@@ -142,18 +141,22 @@ namespace JofferWebAPI.Controllers
                 return Problem($"Account with Auth0Id {userSub} not found!");
             }
             
-            AccountRoles accountRole = _context.AccountRoles.FirstOrDefault(ar => ar.AccountId == account.Id && ar.RoleId == roleId);
+            var accountRoles = _context.AccountRoles
+                .Where(ar => ar.AccountId == account.Id)
+                .Where(ar => ar.RoleId == roleId)
+                .ToList();
 
-            if (accountRole == null)
+            if (accountRoles == null)
             {
-                return Problem("Account role does not exists.");
+                return Problem("Account role(s) does not exists.");
             }
-            
-            accountRole.IsActive = false;
-            _context.Entry(accountRole).State = EntityState.Modified;
 
-            await _context.SaveChangesAsync();
-            
+            foreach (var accountRole in accountRoles)
+            {
+                _context.AccountRoles.Remove(accountRole);
+                await _context.SaveChangesAsync();
+            }
+
             return NoContent();
         }
 
