@@ -23,7 +23,7 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Role
         [HttpGet("/Roles/Account")]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRole()
+        public async Task<ActionResult<IEnumerable<Role>>> GetAccountRoles()
         {
             var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
@@ -57,6 +57,48 @@ namespace JofferWebAPI.Controllers
             return roles;
         }
         
+        [HttpGet("/Roles/JobOffer/{jobofferId}")]
+        public async Task<ActionResult<IEnumerable<Role>>> GetJobOfferRoles(int jobofferId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobofferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobofferId} not found!");
+            }
+
+            var jobOfferRoles = _context.JobOfferRoles
+                .Where(jor => jor.JobOfferId == jobofferId)
+                .Where(jor => jor.IsActive == true)
+                .ToList();
+            
+            var roles = jobOfferRoles
+                .Join(_context.Roles,
+                    jor => jor.RoleId,
+                    r => r.Id,
+                    (jor, r) => r) 
+                .ToList();
+            
+            return roles;
+        }
+        
         // GET: api/Role
         [HttpGet("/Roles/GetAll")]
         public async Task<ActionResult<IEnumerable<Role>>> GetAllRoles()
@@ -80,7 +122,7 @@ namespace JofferWebAPI.Controllers
             _context.Role.Add(role);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRole", new { id = role.Id }, role);
+            return Ok("Posted.");
         }
         
         [HttpPost("Role/Account/{roleId}")]
@@ -116,6 +158,63 @@ namespace JofferWebAPI.Controllers
             accountRoles.IsActive = true;
             
             _context.AccountRoles.Add(accountRoles);
+            await _context.SaveChangesAsync();
+
+            return Ok("Success!");
+        }
+        
+        [HttpPost("Role/{roleId}/JobOffer/{jobOfferId}")]
+        public async Task<ActionResult<Role>> PostRoleToJobOffer(int roleId, int jobOfferId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+
+            if (role == null)
+            {
+                return Problem($"Role with id {roleId} not found!");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+            
+            if (company == null)
+            {
+                return Problem($"Account with id {account.Id} is not a company!");
+            }
+            
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobOfferId} not found!");
+            }
+
+            if (jobOffer.CompanyId != company.Id)
+            {
+                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
+            }
+            
+            JobOfferRoles jobOfferRoles = new JobOfferRoles();
+            jobOfferRoles.JobOfferId = jobOfferId;
+            jobOfferRoles.RoleId = roleId;
+            jobOfferRoles.IsActive = true;
+            
+            _context.JobOfferRoles.Add(jobOfferRoles);
             await _context.SaveChangesAsync();
 
             return Ok("Success!");
