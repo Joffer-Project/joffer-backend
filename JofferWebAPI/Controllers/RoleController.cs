@@ -220,6 +220,71 @@ namespace JofferWebAPI.Controllers
             return Ok("Success!");
         }
         
+        [HttpDelete("Role/{roleId}/JobOffer/{jobOfferId}")]
+        public async Task<IActionResult> DeleteRoleFromAccount(int roleId, int jobOfferId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+            
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+
+            if (role == null)
+            {
+                return Problem($"Role with id {roleId} not found!");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+            
+            if (company == null)
+            {
+                return Problem($"Account with id {account.Id} is not a company!");
+            }
+            
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobOfferId} not found!");
+            }
+
+            if (jobOffer.CompanyId != company.Id)
+            {
+                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
+            }
+            
+            var jobOfferRoles = _context.JobOfferRoles
+                .Where(ar => ar.JobOfferId == jobOfferId)
+                .Where(ar => ar.RoleId == roleId)
+                .ToList();
+
+            if (jobOfferRoles.Count == 0)
+            {
+                return Problem("Joboffer role(s) does not exists.");
+            }
+
+            foreach (var jobOfferRole in jobOfferRoles)
+            {
+                _context.JobOfferRoles.Remove(jobOfferRole);
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
+        }
+        
         [HttpDelete("Role/Account/{roleId}")]
         public async Task<IActionResult> DeleteRoleFromAccount(int roleId)
         {
