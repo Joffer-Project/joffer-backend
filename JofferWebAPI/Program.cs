@@ -38,7 +38,8 @@ builder.Services.AddCors(options =>
             builder
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .WithOrigins("http://localhost:3000", "http://localhost:5173", "https://appname.azurestaticapps.net");
+                .WithOrigins("http://localhost:3000", "http://localhost:5173", "https://appname.azurestaticapps.net")
+                .AllowCredentials(); // Allow credentials if your frontend sends cookies or authorization headers
         });
 });
 
@@ -129,10 +130,11 @@ using (NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.
 
           connection.Close();
      }
-
+app.UseCors("CORSPolicy"); 
 app.UseHttpsRedirection();
 
 // Add these lines before UseEndpoints()
+
 app.UseAuthentication();
 app.UseRouting(); 
 app.UseAuthorization();
