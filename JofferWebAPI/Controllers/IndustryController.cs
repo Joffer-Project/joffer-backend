@@ -10,7 +10,7 @@ using JofferWebAPI.Models;
 
 namespace JofferWebAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class IndustryController : ControllerBase
     {
@@ -22,96 +22,304 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Industry
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Industry>>> GetIndustries()
+        [HttpGet("/Industries/Account")]
+        public async Task<ActionResult<IEnumerable<Industry>>> GetAccountIndustries()
         {
-          if (_context.Industry == null)
-          {
-              return NotFound();
-          }
-            return await _context.Industry.ToListAsync();
-        }
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
-        // GET: api/Industry/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Industry>> GetIndustry(int id)
-        {
-          if (_context.Industry == null)
-          {
-              return NotFound();
-          }
-            var industry = await _context.Industry.FindAsync(id);
-
-            if (industry == null)
+            if (userSubClaim == null)
             {
-                return NotFound();
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
             }
 
-            return industry;
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var accountIndustries = _context.AccountIndustries
+                .Where(ar => ar.AccountId == account.Id)
+                .Where(ar => ar.IsActive == true)
+                .ToList();
+
+            var industries = accountIndustries
+                .Join(_context.Industry,
+                    ar => ar.IndustryId,
+                    r => r.Id,
+                    (ar, r) => r)
+                .ToList();
+
+            return industries;
         }
 
-        // PUT: api/Industry/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutIndustry(int id, Industry industry)
+        [HttpGet("/Industries/JobOffer/{jobofferId}")]
+        public async Task<ActionResult<IEnumerable<Industry>>> GetJobOfferIndustries(int jobofferId)
         {
-            if (id != industry.Id)
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
             {
-                return BadRequest();
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
             }
 
-            _context.Entry(industry).State = EntityState.Modified;
+            string userSub = userSubClaim.Value;
 
-            try
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IndustryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Problem($"Account with Auth0Id {userSub} not found!");
             }
 
-            return NoContent();
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobofferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobofferId} not found!");
+            }
+
+            var jobOfferIndustries = _context.JobOfferIndustries
+                .Where(jor => jor.JobOfferId == jobofferId)
+                .Where(jor => jor.IsActive == true)
+                .ToList();
+
+            var industries = jobOfferIndustries
+                .Join(_context.Industry,
+                    jor => jor.IndustryId,
+                    r => r.Id,
+                    (jor, r) => r)
+                .ToList();
+
+            return industries;
         }
 
-        // POST: api/Industry
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Industry>> PostIndustry(Industry industry)
-        {
-          if (_context.Industry == null)
-          {
-              return Problem("Entity set 'DbContextRender.Industries'  is null.");
-          }
-            _context.Industry.Add(industry);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetIndustry", new { id = industry.Id }, industry);
-        }
-
-        // DELETE: api/Industry/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteIndustry(int id)
+        // GET: api/Industry
+        [HttpGet("/Industries/GetAll")]
+        public async Task<ActionResult<IEnumerable<Industry>>> GetAllIndustries()
         {
             if (_context.Industry == null)
             {
                 return NotFound();
             }
-            var industry = await _context.Industry.FindAsync(id);
-            if (industry == null)
+            return await _context.Industry.ToListAsync();
+        }
+
+        // POST: api/Industry
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("Industry")]
+        public async Task<ActionResult<Industry>> PostIndustry(Industry industry)
+        {
+            if (_context.Industry == null)
             {
-                return NotFound();
+                return Problem("Entity set 'DbContextRender.Industry'  is null.");
+            }
+            _context.Industry.Add(industry);
+            await _context.SaveChangesAsync();
+
+            return Ok("Posted.");
+        }
+
+        [HttpPost("Industry/Account/{industryId}")]
+        public async Task<ActionResult<Industry>> PostIndustryToAccount(int industryId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
             }
 
-            _context.Industry.Remove(industry);
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var industry = _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+
+            if (industry == null)
+            {
+                return Problem($"Industry with id {industryId} not found!");
+            }
+
+            AccountIndustries accountIndustries = new AccountIndustries();
+            accountIndustries.AccountId = account.Id;
+            accountIndustries.IndustryId = industryId;
+            accountIndustries.IsActive = true;
+
+            _context.AccountIndustries.Add(accountIndustries);
             await _context.SaveChangesAsync();
+
+            return Ok("Success!");
+        }
+
+        [HttpPost("Industry/{industryId}/JobOffer/{jobOfferId}")]
+        public async Task<ActionResult<Industry>> PostIndustryToJobOffer(int industryId, int jobOfferId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+
+            if (industry == null)
+            {
+                return Problem($"Industry with id {industryId} not found!");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+
+            if (company == null)
+            {
+                return Problem($"Account with id {account.Id} is not a company!");
+            }
+
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobOfferId} not found!");
+            }
+
+            if (jobOffer.CompanyId != company.Id)
+            {
+                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
+            }
+
+            JobOfferIndustries jobOfferIndustries = new JobOfferIndustries();
+            jobOfferIndustries.JobOfferId = jobOfferId;
+            jobOfferIndustries.IndustryId = industryId;
+            jobOfferIndustries.IsActive = true;
+
+            _context.JobOfferIndustries.Add(jobOfferIndustries);
+            await _context.SaveChangesAsync();
+
+            return Ok("Success!");
+        }
+
+        [HttpDelete("Industry/{industryId}/JobOffer/{jobOfferId}")]
+        public async Task<IActionResult> DeleteIndustryFromAccount(int industryId, int jobOfferId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+
+            if (industry == null)
+            {
+                return Problem($"Industry with id {industryId} not found!");
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+
+            if (company == null)
+            {
+                return Problem($"Account with id {account.Id} is not a company!");
+            }
+
+            var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+
+            if (jobOffer == null)
+            {
+                return Problem($"Job offer with id {jobOfferId} not found!");
+            }
+
+            if (jobOffer.CompanyId != company.Id)
+            {
+                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
+            }
+
+            var jobOfferIndustries = _context.JobOfferIndustries
+                .Where(ar => ar.JobOfferId == jobOfferId)
+                .Where(ar => ar.IndustryId == industryId)
+                .ToList();
+
+            if (jobOfferIndustries.Count == 0)
+            {
+                return Problem("Joboffer industry(s) does not exists.");
+            }
+
+            foreach (var jobOfferIndustry in jobOfferIndustries)
+            {
+                _context.JobOfferIndustries.Remove(jobOfferIndustry);
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("Industry/Account/{industryId}")]
+        public async Task<IActionResult> DeleteIndustryFromAccount(int industryId)
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+
+            var accountIndustries = _context.AccountIndustries
+                .Where(ar => ar.AccountId == account.Id)
+                .Where(ar => ar.IndustryId == industryId)
+                .ToList();
+
+            if (accountIndustries.Count == 0)
+            {
+                return Problem("Account industry(s) does not exists.");
+            }
+
+            foreach (var accountIndustry in accountIndustries)
+            {
+                _context.AccountIndustries.Remove(accountIndustry);
+                await _context.SaveChangesAsync();
+            }
 
             return NoContent();
         }

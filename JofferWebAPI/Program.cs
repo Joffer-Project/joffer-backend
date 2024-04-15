@@ -59,26 +59,26 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     // //Add the OAuth2 security scheme definition
-    //  options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    //  {
-    //      Type = SecuritySchemeType.OAuth2,
-    //      Flows = new OpenApiOAuthFlows
-    //      {
-    //          Implicit = new OpenApiOAuthFlow
-    //          {
-    //              TokenUrl = new Uri($"https://{configuration["Auth0:Domain"]}/oauth/token"),
-    //              AuthorizationUrl = new Uri($"https://{configuration["Auth0:Domain"]}/authorize?audience={configuration["Auth0:Audience"]}"),
-    //
-    //              Scopes = new Dictionary<string, string>
+    //options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    //{
+    //    Type = SecuritySchemeType.OAuth2,
+    //    Flows = new OpenApiOAuthFlows
+    //    {
+    //        Implicit = new OpenApiOAuthFlow
+    //        {
+    //            TokenUrl = new Uri($"https://{configuration["Auth0:Domain"]}/oauth/token"),
+    //            AuthorizationUrl = new Uri($"https://{configuration["Auth0:Domain"]}/authorize?audience={configuration["Auth0:Audience"]}"),
+
+    //            Scopes = new Dictionary<string, string>
     //              {
     //                  { "friet", "saus" } // Modify scopes as needed
     //              }
-    //          }
-    //      }
-    //  });
-    //
+    //        }
+    //    }
+    //});
+
     // //Add security requirement to endpoints
-    //  options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
     //  {
     //      {
     //          new OpenApiSecurityScheme
