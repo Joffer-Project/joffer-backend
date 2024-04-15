@@ -245,10 +245,57 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpGet("/Matches")]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAllAccounts()
+        public async Task<ActionResult<IEnumerable<JobOfferSwipe>>> GetAllAccounts()
         {
-            //TODO: add matches.
-            return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found.");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == userSub);
+
+            if (account == null)
+            {
+                return BadRequest($"Account with Auth0Id {userSub} not found.");
+            }
+            
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+
+            if (company != null)
+            {
+                var jobOfferSwipes = await _context.JobOfferSwipes
+                    .Where(jos=>jos.FinalMatch == true)
+                    .Join(
+                        _context.JobOffers,
+                        jos => jos.JobOfferId,
+                        jo => jo.Id,
+                        (jos, jo) => new { JobOfferSwipe = jos, JobOffer = jo }
+                    )
+                    .Where(joined => joined.JobOffer.CompanyId == company.Id)
+                    .Select(joined => joined.JobOfferSwipe)
+                    .ToListAsync();
+
+                return jobOfferSwipes;
+            }
+
+            if (talent != null)
+            {
+                var jobOfferSwipes = await _context.JobOfferSwipes
+                    .Where(jos => jos.TalentId == talent.Id)
+                    .Where(jos => jos.FinalMatch == true)
+                    .ToListAsync();
+
+                return jobOfferSwipes;
+            }
+            
+            return BadRequest("User is not a talent and is not a company.");
         }
     }
 }
