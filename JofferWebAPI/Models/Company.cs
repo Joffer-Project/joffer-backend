@@ -12,9 +12,18 @@ public partial class Company
         AccountId = companyDto.AccountId;
         LogoUrl = companyDto.LogoUrl;
         Description = companyDto.Description;
-        RecruiterToken = companyDto.RecruiterToken;
-        TokenActiveSince = companyDto.TokenActiveSince;
+        Image2Url = companyDto.Image2Url;
+        Image3Url = companyDto.Image3Url;
+        Image4Url = companyDto.Image4Url;
+        Image5Url = companyDto.Image5Url;
+        ComapnyUrl = companyDto.ComapnyUrl;
+        LinkedInUrl = companyDto.LinkedInUrl;
+        YoutubeUrl = companyDto.YoutubeUrl;
+        InstaGramUrl = companyDto.InstaGramUrl;
+        TwitterUrl = companyDto.TwitterUrl;
         IsActive = companyDto.IsActive;
+        RecruiterToken = "000000";
+        TokenActiveSince = (DateTime.Now).ToUniversalTime();
     }
 
     [Key]

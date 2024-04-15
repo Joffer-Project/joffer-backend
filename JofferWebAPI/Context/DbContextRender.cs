@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+using System.Configuration;
 using JofferWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +21,8 @@ public partial class DbContextRender : DbContext
     public DbSet<AccountIndustries> AccountIndustries { get; set; }
     public DbSet<AccountRoles> AccountRoles { get; set; }
     public DbSet<Talent> Talents { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Industry> Industry { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<JobOffer> JobOffers { get; set; }
     public DbSet<JobOfferSwipe> JobOfferSwipes { get; set; }
@@ -31,4 +33,6 @@ public partial class DbContextRender : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public DbSet<JofferWebAPI.Models.Role> Role { get; set; } = default!;
 }
