@@ -10,7 +10,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Security.Claims;
 using JofferWebAPI.Context;
 ﻿// using JofferWebAPI.Context;
-using MySql.Data.MySqlClient;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.OpenApi.Models;
