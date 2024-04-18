@@ -145,7 +145,7 @@ namespace JofferWebAPI.Controllers
                 return Problem($"Account with Auth0Id {userSub} not found!");
             }
             
-            var role = _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
 
             if (role == null)
             {

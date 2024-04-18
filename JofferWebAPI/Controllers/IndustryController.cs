@@ -145,7 +145,7 @@ namespace JofferWebAPI.Controllers
                 return Problem($"Account with Auth0Id {userSub} not found!");
             }
 
-            var industry = _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+            var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
 
             if (industry == null)
             {
