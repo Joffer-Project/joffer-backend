@@ -71,21 +71,35 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Talent/5
-        [HttpGet("Talent/{id}")]
-        public async Task<ActionResult<Talent>> GetTalent(int id)
+        [HttpGet("Talent")]
+        public async Task<ActionResult<Talent>> GetTalent()
         {
-          if (_context.Talents == null)
-          {
-              return NotFound();
-          }
-          var applicant = await _context.Talents.FindAsync(id);
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
-          if (applicant == null)
-          {
-              return NotFound();
-          }
+            if (userSubClaim == null)
+            {
+                return BadRequest("User identifier claim not found.");
+            }
 
-          return applicant;
+            string userSub = userSubClaim.Value;
+
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(a => a.AccountId == account.Id);
+            
+            if (talent == null)
+            {
+                return Problem($"Not a talent!");
+            }
+
+            talent.Account = null;
+
+            return talent;
         }
 
         // POST: api/Talent

@@ -23,20 +23,33 @@ namespace JofferWebAPI.Controllers
         }
 
         // GET: api/Company/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompany(int id)
+        [HttpGet]
+        public async Task<ActionResult<Company>> GetCompany()
         {
-            if (_context.Companies == null)
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
             {
-                return NotFound();
+                return BadRequest("User identifier claim not found.");
             }
 
-            var company = await _context.Companies.FindAsync(id);
+            string userSub = userSubClaim.Value;
 
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == userSub);
+            
+            if (account == null)
+            {
+                return Problem($"Account with Auth0Id {userSub} not found!");
+            }
+            
+            var company = await _context.Companies.FirstOrDefaultAsync(a => a.AccountId == account.Id);
+            
             if (company == null)
             {
-                return NotFound();
+                return Problem($"Not a company!");
             }
+
+            company.Account = null;
 
             return company;
         }
