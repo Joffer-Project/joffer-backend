@@ -35,8 +35,8 @@ namespace JofferWebAPI.Controllers
 
 
         // GET: api/JobOffers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffers()
+        [HttpGet("Company")]
+        public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffersCompany()
         {
             var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
@@ -61,6 +61,48 @@ namespace JofferWebAPI.Controllers
             var jobOffers = await _context.JobOffers
                                     .Where(j => j.Company.AccountId == accountId)
                                     .ToListAsync();
+
+            return jobOffers;
+        }
+
+        [HttpGet("Talent")]
+        public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffersTalent()
+        {
+            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+            if (userSubClaim == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User identifier claim not found.");
+            }
+
+            string userSub = userSubClaim.Value;
+
+            // Retrieve the AccountID associated with the user's Auth0Id
+            int accountId = await GetAccountIdByAuth0Id(userSub);
+            
+            if (accountId == 0)
+            {
+                // No matching account found
+                return NotFound("Account not found.");
+            }
+
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == accountId);
+
+            if (talent == null)
+            {
+                // User is not authenticated or user identifier claim is not found
+                return BadRequest("User is not a talent.");
+            }
+            
+            var jobOfferSwipes = await _context.JobOfferSwipes
+                .Where(jos=>jos.TalentId == talent.Id)
+                .Select(jos => jos.JobOfferId)
+                .ToListAsync();
+            
+            var jobOffers = await _context.JobOffers
+                .Where(j=>!jobOfferSwipes.Contains(j.Id))
+                .ToListAsync();
 
             return jobOffers;
         }
