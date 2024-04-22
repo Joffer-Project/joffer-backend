@@ -47,7 +47,7 @@ var configuration = builder.Configuration;
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DbContextRender>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<AuthActionFilter>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
