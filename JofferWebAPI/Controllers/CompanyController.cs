@@ -86,9 +86,12 @@ namespace JofferWebAPI.Controllers
             }
 
             companyDto.AccountId = recentlyCreatedAccount.Id;
-            _context.Companies.Add(new Company(companyDto));
-
+            
+            var newCompany = new Company(companyDto);
+            _context.Companies.Add(newCompany);
             await _context.SaveChangesAsync();
+
+            companyDto.Id = newCompany.Id;
 
             return CreatedAtAction("GetCompany", new { id = companyDto.Id }, companyDto);
         }
