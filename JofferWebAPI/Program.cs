@@ -1,21 +1,15 @@
-﻿using System.Configuration;
-using JofferWebAPI;
+﻿using JofferWebAPI;
 using JofferWebAPI.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MySql.Data.MySqlClient;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Security.Claims;
 using JofferWebAPI.Context;
-﻿// using JofferWebAPI.Context;
-using MySql.Data.MySqlClient;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
-//TEST
+
 var builder = WebApplication.CreateBuilder(args);
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -39,7 +33,7 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .WithOrigins("http://localhost:3000", "http://localhost:5173", "https://appname.azurestaticapps.net")
-                .AllowCredentials(); // Allow credentials if your frontend sends cookies or authorization headers
+                .AllowCredentials();
         });
 });
 
@@ -94,16 +88,10 @@ builder.Services.AddSwaggerGen(options =>
       });
 });
 
-
-
-
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
 app.UseSwagger();
 app.UseSwaggerUI(settings =>
 {
@@ -112,7 +100,6 @@ app.UseSwaggerUI(settings =>
     settings.OAuthClientSecret(configuration["Auth0:ClientSecret"]);
     settings.OAuthUsePkce();
 });
-// }
 
 //SQL connection
 using (NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")))
@@ -133,12 +120,9 @@ using (NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.
 app.UseCors("CORSPolicy"); 
 app.UseHttpsRedirection();
 
-// Add these lines before UseEndpoints()
-
 app.UseAuthentication();
 app.UseRouting(); 
 app.UseAuthorization();
-
 
 app.UseEndpoints(endpoints =>
 {
