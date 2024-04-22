@@ -25,14 +25,14 @@ namespace JofferWebAPI.Controllers
         
         // GET: api/Talent
         [HttpGet("Talents")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<TalentWithJobOfferId>>> GetTalents()
         {
-            string accountSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountSub);
-            
+            var account = HttpContext.Items["UserAccount"] as Account;
+
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {accountSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
@@ -72,22 +72,14 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Talent/5
         [HttpGet("Talent")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Talent>> GetTalent()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                return BadRequest("User identifier claim not found.");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var talent = await _context.Talents.FirstOrDefaultAsync(a => a.AccountId == account.Id);
@@ -147,14 +139,14 @@ namespace JofferWebAPI.Controllers
         // PUT: api/Talent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("Talent")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<TalentDto>> PutTalent(TalentDto talentDto)
         {
-            string accountSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountSub);
-            
+            var account = HttpContext.Items["UserAccount"] as Account;
+
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {accountSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
