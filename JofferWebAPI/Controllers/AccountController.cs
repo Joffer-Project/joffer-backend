@@ -14,7 +14,6 @@ namespace JofferWebAPI.Controllers
 {
     [Route("")]
     [ApiController]
-    [ServiceFilter(typeof(AuthActionFilter))]
     public class AccountController : ControllerBase
     {
         private readonly DbContextRender _context;
@@ -25,6 +24,7 @@ namespace JofferWebAPI.Controllers
         }
         
         // GET: api/Account
+        [ServiceFilter(typeof(AuthActionFilter))]
         [HttpGet("Account")]
         
         public async Task<ActionResult<Account>> GetAccount()
