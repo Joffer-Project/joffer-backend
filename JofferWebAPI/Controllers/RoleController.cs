@@ -23,23 +23,14 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Role
         [HttpGet("/Roles/Account")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Role>>> GetAccountRoles()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var accountRoles = _context.AccountRoles
@@ -58,23 +49,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpGet("/Roles/JobOffer/{jobofferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Role>>> GetJobOfferRoles(int jobofferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobofferId);
@@ -126,23 +108,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpPost("Role/Account/{roleId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Role>> PostRoleToAccount(int roleId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
@@ -164,23 +137,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpPost("Role/{roleId}/JobOffer/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Role>> PostRoleToJobOffer(int roleId, int jobOfferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
@@ -221,23 +185,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpDelete("Role/{roleId}/JobOffer/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteRoleFromAccount(int roleId, int jobOfferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
@@ -286,23 +241,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpDelete("Role/Account/{roleId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteRoleFromAccount(int roleId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
-            
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
             
             var accountRoles = _context.AccountRoles

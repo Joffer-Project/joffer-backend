@@ -23,21 +23,21 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpPost("/Like/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<JobOfferSwipe>>> LikeCompany(int jobOfferId)
         {
-            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (loggedInUser == null)
+            if (account == null)
             {
-                return Problem($"Logged in user with auth0Id: {loggedInUserSub} does not exists.");
+                return Problem("Failed to fetch the account");
             }
             
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == loggedInUser.Id);
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
 
             if (talent == null)
             {
-                return Problem($"Logged in user with auth0Id: {loggedInUserSub} is not a talent.");
+                return Problem($"Logged in user with auth0Id: {account.Auth0Id} is not a talent.");
             }
             
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
@@ -51,7 +51,7 @@ namespace JofferWebAPI.Controllers
             
             if (existingJobOfferSwipe != null)
             {
-                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {loggedInUser.Auth0Id}");
+                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {account.Auth0Id}");
             }
             
             JobOfferSwipe jobOfferSwipe = new JobOfferSwipe();
@@ -70,28 +70,21 @@ namespace JofferWebAPI.Controllers
 
         // PUT: Like/{jobOfferId}/Talent/{auth0Id}
         [HttpPut("/Like/{jobOfferId}/Talent/{auth0Id}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Talent>>> LikeTalent(string auth0Id, int jobOfferId)
         {
-            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (loggedInUser == null)
+            if (account == null)
             {
-                return Problem($"Logged in user with auth0Id: {auth0Id} does not exists.");
+                return Problem("Failed to fetch the account");
             }
 
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == loggedInUser.Id);
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
 
             if (company == null)
             {
                 return Problem($"Logged in user with auth0Id: {auth0Id} is not a company.");
-            }
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == auth0Id);
-            
-            if (account == null)
-            {
-                return Problem($"Account with auth0Id: {auth0Id} does not exists.");
             }
             
             var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
@@ -134,21 +127,21 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpPost("/Dislike/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<JobOfferSwipe>>> DislikeCompany(int jobOfferId)
         {
-            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (loggedInUser == null)
+            if (account == null)
             {
-                return Problem($"Logged in user with auth0Id: {loggedInUserSub} does not exists.");
+                return Problem("Failed to fetch the account");
             }
             
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == loggedInUser.Id);
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
 
             if (talent == null)
             {
-                return Problem($"Logged in user with auth0Id: {loggedInUserSub} is not a talent.");
+                return Problem($"Logged in user with auth0Id: {account.Auth0Id} is not a talent.");
             }
             
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
@@ -162,7 +155,7 @@ namespace JofferWebAPI.Controllers
 
             if (existingJobOfferSwipe != null)
             {
-                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {loggedInUser.Auth0Id}");
+                return Problem($"Job offer with id {jobOfferId} already swipe by talent with auth0id {account.Auth0Id}");
             }
             
             JobOfferSwipe jobOfferSwipe = new JobOfferSwipe();
@@ -180,28 +173,21 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpPut("/Dislike/{jobOfferId}/Talent/{auth0Id}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Talent>>> DislikeTalent(string auth0Id, int jobOfferId)
         {
-            string loggedInUserSub = User.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-            var loggedInUser = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == loggedInUserSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (loggedInUser == null)
+            if (account == null)
             {
-                return Problem($"Logged in user with auth0Id: {auth0Id} does not exists.");
+                return Problem("Failed to fetch the account");
             }
 
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == loggedInUser.Id);
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
 
             if (company == null)
             {
                 return Problem($"Logged in user with auth0Id: {auth0Id} is not a company.");
-            }
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == auth0Id);
-            
-            if (account == null)
-            {
-                return Problem($"Account with auth0Id: {auth0Id} does not exists.");
             }
             
             var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
@@ -245,23 +231,14 @@ namespace JofferWebAPI.Controllers
         }
         
         [HttpGet("/Matches")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<JobOfferSwipe>>> GetAllAccounts()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found.");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return BadRequest($"Account with Auth0Id {userSub} not found.");
+                return Problem("Failed to fetch the account");
             }
             
             var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);

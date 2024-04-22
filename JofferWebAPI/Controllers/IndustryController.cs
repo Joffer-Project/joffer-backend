@@ -23,23 +23,14 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/Industry
         [HttpGet("/Industries/Account")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Industry>>> GetAccountIndustries()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var accountIndustries = _context.AccountIndustries
@@ -58,23 +49,14 @@ namespace JofferWebAPI.Controllers
         }
 
         [HttpGet("/Industries/JobOffer/{jobofferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Industry>>> GetJobOfferIndustries(int jobofferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobofferId);
@@ -126,23 +108,14 @@ namespace JofferWebAPI.Controllers
         }
 
         [HttpPost("Industry/Account/{industryId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Industry>> PostIndustryToAccount(int industryId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
@@ -164,23 +137,14 @@ namespace JofferWebAPI.Controllers
         }
 
         [HttpPost("Industry/{industryId}/JobOffer/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Industry>> PostIndustryToJobOffer(int industryId, int jobOfferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
@@ -221,23 +185,14 @@ namespace JofferWebAPI.Controllers
         }
 
         [HttpDelete("Industry/{industryId}/JobOffer/{jobOfferId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteIndustryFromAccount(int industryId, int jobOfferId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
@@ -286,23 +241,14 @@ namespace JofferWebAPI.Controllers
         }
 
         [HttpDelete("Industry/Account/{industryId}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteIndustryFromAccount(int industryId)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            if (userSubClaim == null)
-            {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found. (In other words, user is not logged in)");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            var account = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == userSub);
+            var account = HttpContext.Items["UserAccount"] as Account;
 
             if (account == null)
             {
-                return Problem($"Account with Auth0Id {userSub} not found!");
+                return Problem("Failed to fetch the account");
             }
 
             var accountIndustries = _context.AccountIndustries

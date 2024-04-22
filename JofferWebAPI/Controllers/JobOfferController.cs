@@ -36,58 +36,36 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/JobOffers
         [HttpGet("Company")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffersCompany()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found.");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            // Retrieve the AccountID associated with the user's Auth0Id
-            int accountId = await GetAccountIdByAuth0Id(userSub);
-
-            if (accountId == 0)
-            {
-                // No matching account found
-                return NotFound("Account not found.");
+                return Problem("Failed to fetch the account");
             }
 
             // Query the JobOffers table based on the CompanyID associated with the retrieved AccountID
             var jobOffers = await _context.JobOffers
-                                    .Where(j => j.Company.AccountId == accountId)
+                                    .Where(j => j.Company.AccountId == account.Id)
                                     .ToListAsync();
 
             return jobOffers;
         }
 
         [HttpGet("Talent")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<JobOffer>>> GetJobOffersTalent()
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found.");
+                return Problem("Failed to fetch the account");
             }
 
-            string userSub = userSubClaim.Value;
-
-            // Retrieve the AccountID associated with the user's Auth0Id
-            int accountId = await GetAccountIdByAuth0Id(userSub);
-            
-            if (accountId == 0)
-            {
-                // No matching account found
-                return NotFound("Account not found.");
-            }
-
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == accountId);
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
 
             if (talent == null)
             {
@@ -109,27 +87,19 @@ namespace JofferWebAPI.Controllers
 
         // GET: api/JobOffers/5
         [HttpGet("{id}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<JobOffer>> GetJobOffer(int id)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                return BadRequest("User identifier claim not found.");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            int accountId = await GetAccountIdByAuth0Id(userSub);
-
-            if (accountId == 0)
-            {
-                return NotFound("Account not found.");
+                return Problem("Failed to fetch the account");
             }
 
             // Check if the job offer exists and is associated with the authenticated user's company
             var jobOffer = await _context.JobOffers
-                .FirstOrDefaultAsync(j => j.Company.AccountId == accountId && j.Id == id);
+                .FirstOrDefaultAsync(j => j.Company.AccountId == account.Id && j.Id == id);
 
             if (jobOffer == null)
             {
@@ -142,22 +112,19 @@ namespace JofferWebAPI.Controllers
         // PUT: api/JobOffer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> PutJobOffer(int id, JobOfferDto jobOfferDto)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                return BadRequest("User identifier claim not found.");
+                return Problem("Failed to fetch the account");
             }
-
-            string userSub = userSubClaim.Value;
-
-            int accountId = await GetAccountIdByAuth0Id(userSub); // Assuming userSub contains the user's identifier
 
             var jobOffer = await _context.JobOffers
                 .Include(j => j.Company)
-                .FirstOrDefaultAsync(j => j.Id == id && j.Company.AccountId == accountId);
+                .FirstOrDefaultAsync(j => j.Id == id && j.Company.AccountId == account.Id);
 
             if (jobOffer == null)
             {
@@ -191,29 +158,18 @@ namespace JofferWebAPI.Controllers
         // POST: api/JobOffer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<JobOfferDto>> PostJobOffer(JobOfferDto jobOfferDto)
         {
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                // User is not authenticated or user identifier claim is not found
-                return BadRequest("User identifier claim not found.");
-            }
-
-            string userSub = userSubClaim.Value;
-
-            // Retrieve the AccountID associated with the user's Auth0Id
-            int accountId = await GetAccountIdByAuth0Id(userSub);
-
-            if (accountId == 0)
-            {
-                // No matching account found
-                return NotFound("Account not found.");
+                return Problem("Failed to fetch the account");
             }
 
             // Retrieve the CompanyID associated with the retrieved AccountID
-            int companyId = await GetCompanyIdByAccountId(accountId);
+            int companyId = await GetCompanyIdByAccountId(account.Id);
 
             if (companyId == 0)
             {
@@ -240,6 +196,7 @@ namespace JofferWebAPI.Controllers
 
         // DELETE: api/JobOffer/5
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteJobOffer(int id)
         {
             if (_context.JobOffers == null)
@@ -247,20 +204,16 @@ namespace JofferWebAPI.Controllers
                 return NotFound();
             }
 
-            var userSubClaim = User?.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var account = HttpContext.Items["UserAccount"] as Account;
 
-            if (userSubClaim == null)
+            if (account == null)
             {
-                return BadRequest("User identifier claim not found.");
+                return Problem("Failed to fetch the account");
             }
-
-            string userSub = userSubClaim.Value;
-
-            int accountId = await GetAccountIdByAuth0Id(userSub); // Assuming userSub contains the user's identifier
 
             var jobOffer = await _context.JobOffers
                 .Include(j => j.Company)
-                .FirstOrDefaultAsync(j => j.Id == id && j.Company.AccountId == accountId);
+                .FirstOrDefaultAsync(j => j.Id == id && j.Company.AccountId == account.Id);
 
             if (jobOffer == null)
             {
