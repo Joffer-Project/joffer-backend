@@ -95,15 +95,16 @@ namespace JofferWebAPI.Controllers
             {
                 return Problem("Entity set 'MyDbContext.Talents'  is null.");
             }
-          
-            AccountDto accountDto = new AccountDto();
-            accountDto.Name = talentDto.Name;
-            accountDto.Auth0Id = talentDto.Auth0Id;
-            accountDto.Email = talentDto.Email;
-            accountDto.IsPremium = talentDto.IsPremium;
-            accountDto.IsActive = true;
-            accountDto.AccountType = "Applicant";
-            accountDto.Password = "";
+
+            AccountDto accountDto = new()
+            {
+                Name = talentDto.Name,
+                Auth0Id = talentDto.Auth0Id,
+                Email = talentDto.Email,
+                IsPremium = talentDto.IsPremium,
+                IsActive = true,
+                AccountType = "Applicant",
+            };  
           
             _context.Accounts.Add(new Account(accountDto));
           
@@ -123,7 +124,6 @@ namespace JofferWebAPI.Controllers
             await _context.SaveChangesAsync();
 
             talentDto.Id = newTalent.Id;
-
 
             return CreatedAtAction("GetTalent", new { id = talentDto.Id }, talentDto);
         }
@@ -145,7 +145,7 @@ namespace JofferWebAPI.Controllers
 
             if (talent == null)
             {
-                return Problem($"Talent not found. (No talent bindend to the account.)");
+                return Problem("Talent not found. (No talent bound to the account.)");
             }
 
             talent.AboutMe = talentDto.AboutMe;
@@ -162,7 +162,9 @@ namespace JofferWebAPI.Controllers
             talent.PersonalUrl = talentDto.PersonalUrl;
             talent.GitHubUrl = talentDto.GitHubUrl;
             talent.IsActive = talentDto.IsActive;
-            
+
+            // talent = new Talent(talentDto);
+
             _context.Entry(talent).State = EntityState.Modified;
             
             try
@@ -180,15 +182,18 @@ namespace JofferWebAPI.Controllers
                     throw;
                 }
             }
-            
+
             account.Auth0Id = talentDto.Auth0Id;
             account.Email = talentDto.Email;
+            account.PhoneNumber = talentDto.PhoneNumber;
             account.Password = "NO PASSWORD";
             account.Name = talentDto.Name;
             account.AccountType = "Applicant";
             account.IsPremium = talentDto.IsPremium;
             account.IsActive = talentDto.IsActive;
-            
+
+            //account = new Account(new AccountDto(talent.Account));
+
             _context.Entry(account).State = EntityState.Modified;
             
             try

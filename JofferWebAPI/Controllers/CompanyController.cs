@@ -143,6 +143,7 @@ namespace JofferWebAPI.Controllers
 
             account.Auth0Id = companyDto.Auth0Id;
             account.Email = companyDto.Email;
+            account.PhoneNumber = companyDto.PhoneNumber;
             account.Password = "NO PASSWORD";
             account.Name = companyDto.Name;
             account.AccountType = "Company";
