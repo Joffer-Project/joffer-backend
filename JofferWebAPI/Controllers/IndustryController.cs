@@ -26,9 +26,7 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Industry>>> GetAccountIndustries()
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
@@ -52,19 +50,14 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<Industry>>> GetJobOfferIndustries(int jobofferId)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
 
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobofferId);
+            if (jobOffer == null) return Problem($"Job offer with id {jobofferId} not found!");
 
-            if (jobOffer == null)
-            {
-                return Problem($"Job offer with id {jobofferId} not found!");
-            }
 
             var jobOfferIndustries = _context.JobOfferIndustries
                 .Where(jor => jor.JobOfferId == jobofferId)
@@ -97,10 +90,8 @@ namespace JofferWebAPI.Controllers
         [HttpPost("Industry")]
         public async Task<ActionResult<Industry>> PostIndustry(Industry industry)
         {
-            if (_context.Industry == null)
-            {
-                return Problem("Entity set 'DbContextRender.Industry'  is null.");
-            }
+            if (_context.Industry == null) return Problem("Entity set 'DbContextRender.Industry'  is null.");
+            
             _context.Industry.Add(industry);
             await _context.SaveChangesAsync();
 
@@ -111,24 +102,21 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Industry>> PostIndustryToAccount(int industryId)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+            if (industry == null) return Problem($"Industry with id {industryId} not found!");
 
-            if (industry == null)
+
+            AccountIndustries accountIndustries = new()
             {
-                return Problem($"Industry with id {industryId} not found!");
-            }
-
-            AccountIndustries accountIndustries = new AccountIndustries();
-            accountIndustries.AccountId = account.Id;
-            accountIndustries.IndustryId = industryId;
-            accountIndustries.IsActive = true;
+                AccountId = account.Id,
+                IndustryId = industryId,
+                IsActive = true
+            };
 
             _context.AccountIndustries.Add(accountIndustries);
             await _context.SaveChangesAsync();
@@ -140,43 +128,31 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<Industry>> PostIndustryToJobOffer(int industryId, int jobOfferId)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+            if (industry == null) return Problem($"Industry with id {industryId} not found!");
 
-            if (industry == null)
-            {
-                return Problem($"Industry with id {industryId} not found!");
-            }
 
             var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
-
-            if (company == null)
-            {
-                return Problem($"Account with id {account.Id} is not a company!");
-            }
+            if (company == null) return Problem($"Account with id {account.Id} is not a company!");
+            
 
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+            if (jobOffer == null) return Problem($"Job offer with id {jobOfferId} not found!");
 
-            if (jobOffer == null)
+            if (jobOffer.CompanyId != company.Id) return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
+
+
+            JobOfferIndustries jobOfferIndustries = new()
             {
-                return Problem($"Job offer with id {jobOfferId} not found!");
-            }
-
-            if (jobOffer.CompanyId != company.Id)
-            {
-                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
-            }
-
-            JobOfferIndustries jobOfferIndustries = new JobOfferIndustries();
-            jobOfferIndustries.JobOfferId = jobOfferId;
-            jobOfferIndustries.IndustryId = industryId;
-            jobOfferIndustries.IsActive = true;
+                JobOfferId = jobOfferId,
+                IndustryId = industryId,
+                IsActive = true
+            };
 
             _context.JobOfferIndustries.Add(jobOfferIndustries);
             await _context.SaveChangesAsync();
@@ -188,49 +164,33 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteIndustryFromAccount(int industryId, int jobOfferId)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
 
             var industry = await _context.Industry.FirstOrDefaultAsync(r => r.Id == industryId);
+            if (industry == null) return Problem($"Industry with id {industryId} not found!");
 
-            if (industry == null)
-            {
-                return Problem($"Industry with id {industryId} not found!");
-            }
 
             var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
-
-            if (company == null)
-            {
-                return Problem($"Account with id {account.Id} is not a company!");
-            }
+            if (company == null) return Problem($"Account with id {account.Id} is not a company!");
+            
 
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+            if (jobOffer == null) return Problem($"Job offer with id {jobOfferId} not found!");
 
-            if (jobOffer == null)
-            {
-                return Problem($"Job offer with id {jobOfferId} not found!");
-            }
+            if (jobOffer.CompanyId != company.Id) return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
 
-            if (jobOffer.CompanyId != company.Id)
-            {
-                return Problem($"Job offer with id {jobOfferId} does not belong to this company!");
-            }
 
             var jobOfferIndustries = _context.JobOfferIndustries
                 .Where(ar => ar.JobOfferId == jobOfferId)
                 .Where(ar => ar.IndustryId == industryId)
                 .ToList();
 
-            if (jobOfferIndustries.Count == 0)
-            {
-                return Problem("Joboffer industry(s) does not exists.");
-            }
-
+            if (jobOfferIndustries.Count == 0) return Problem("Joboffer industry does not exists.");
+            
+            // is this neccessary?
             foreach (var jobOfferIndustry in jobOfferIndustries)
             {
                 _context.JobOfferIndustries.Remove(jobOfferIndustry);
@@ -244,9 +204,7 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<IActionResult> DeleteIndustryFromAccount(int industryId)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
@@ -256,11 +214,9 @@ namespace JofferWebAPI.Controllers
                 .Where(ar => ar.IndustryId == industryId)
                 .ToList();
 
-            if (accountIndustries.Count == 0)
-            {
-                return Problem("Account industry(s) does not exists.");
-            }
-
+            if (accountIndustries.Count == 0) return Problem("Account industry(s) does not exists.");
+            
+            // is this really neccessary?
             foreach (var accountIndustry in accountIndustries)
             {
                 _context.AccountIndustries.Remove(accountIndustry);
@@ -268,11 +224,6 @@ namespace JofferWebAPI.Controllers
             }
 
             return NoContent();
-        }
-
-        private bool IndustryExists(int id)
-        {
-            return (_context.Industry?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
