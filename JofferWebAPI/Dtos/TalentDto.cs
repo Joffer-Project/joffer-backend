@@ -26,6 +26,11 @@ namespace JofferWebAPI.Dtos
             MediumUrl = talent.MediumUrl;
             DribbleUrl = talent.DribbleUrl;
             PersonalUrl = talent.PersonalUrl;
+
+            Name = talent.Account.Name;
+            Auth0Id = talent.Account.Auth0Id;
+            Email = talent.Account.Email;
+            IsPremium = talent.Account.IsPremium;
         }
 
         public int Id { get; set; }
@@ -33,7 +38,7 @@ namespace JofferWebAPI.Dtos
         public string AboutMe { get; set; }
         public int SalaryMinimum { get; set; }
         public string EmploymentStatus { get; set; }
-        public string AvatarUrl { get; set; }
+        public string? AvatarUrl { get; set; }
         public string? Image2Url { get; set; }
         public string? Image3Url { get; set; }
         public string? Image4Url { get; set; }

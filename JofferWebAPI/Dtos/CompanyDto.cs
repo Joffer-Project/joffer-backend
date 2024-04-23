@@ -12,7 +12,21 @@ namespace JofferWebAPI.Dtos
             AccountId = company.AccountId;
             Description = company.Description;
             LogoUrl = company.LogoUrl;
+            Image2Url = company.Image2Url;
+            Image3Url = company.Image3Url;
+            Image4Url = company.Image4Url;
+            Image5Url = company.Image5Url;
+            ComapnyUrl = company.ComapnyUrl;
+            LinkedInUrl = company.LinkedInUrl;
+            YoutubeUrl = company.YoutubeUrl;
+            InstaGramUrl = company.InstaGramUrl;
+            TwitterUrl = company.TwitterUrl;
             IsActive = company.IsActive;
+
+            Name = company.Account.Name;
+            Auth0Id = company.Account.Auth0Id;
+            Email = company.Account.Email;
+            IsPremium = company.Account.IsPremium;
         }
 
         public int Id { get; set; }

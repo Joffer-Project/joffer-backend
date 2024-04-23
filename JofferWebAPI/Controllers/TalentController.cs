@@ -73,7 +73,7 @@ namespace JofferWebAPI.Controllers
         // GET: api/Talent/5
         [HttpGet("Talent")]
         [ServiceFilter(typeof(AuthActionFilter))]
-        public async Task<ActionResult<Talent>> GetTalent()
+        public async Task<ActionResult<TalentDto>> GetTalent()
         {
             var account = HttpContext.Items["UserAccount"] as Account;
 
@@ -86,12 +86,10 @@ namespace JofferWebAPI.Controllers
             
             if (talent == null)
             {
-                return Problem($"Not a talent!");
+                return Problem("Not a talent!");
             }
 
-            talent.Account = null;
-
-            return talent;
+            return new TalentDto(talent);
         }
 
         // POST: api/Talent

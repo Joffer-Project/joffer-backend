@@ -25,7 +25,7 @@ namespace JofferWebAPI.Controllers
         // GET: api/Company/5
         [HttpGet]
         [ServiceFilter(typeof(AuthActionFilter))]
-        public async Task<ActionResult<Company>> GetCompany()
+        public async Task<ActionResult<CompanyDto>> GetCompany()
         {
             var account = HttpContext.Items["UserAccount"] as Account;
 
@@ -38,12 +38,12 @@ namespace JofferWebAPI.Controllers
             
             if (company == null)
             {
-                return Problem($"Not a company!");
+                return Problem("Not a company!");
             }
 
-            company.Account = null;
+            //company.Account = null;
 
-            return company;
+            return new CompanyDto(company);
         }
 
         // POST: api/Company
