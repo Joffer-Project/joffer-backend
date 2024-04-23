@@ -35,7 +35,7 @@ public class Account
 
     public string Email { get; set; }
 
-    public string PhoneNumber {  get; set; }
+    public string PhoneNumber { get; set; }
 
     public bool IsPremium { get; set; }
 
