@@ -14,6 +14,7 @@ public class AccountDto
         Password = account.Password;
         AccountType = account.AccountType;
         Email = account.Email;
+        PhoneNumber = account.PhoneNumber;
         IsPremium = account.IsPremium;
         IsActive = account.IsActive;
     }
@@ -29,6 +30,8 @@ public class AccountDto
     public string AccountType { get; set; }
 
     public string Email { get; set; }
+
+    public string PhoneNumber { get; set; }
 
     public bool IsPremium { get; set; }
 
