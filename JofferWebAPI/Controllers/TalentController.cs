@@ -69,13 +69,11 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<TalentDto>> GetTalent()
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
-            
+
             var talent = await _context.Talents.FirstOrDefaultAsync(a => a.AccountId == account.Id);
             
             if (talent == null)
@@ -134,13 +132,11 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<TalentDto>> PutTalent(TalentDto talentDto)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
-            
+
             var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
 
             if (talent == null)
