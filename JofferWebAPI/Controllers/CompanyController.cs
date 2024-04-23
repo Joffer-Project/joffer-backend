@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
@@ -27,21 +22,17 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<CompanyDto>> GetCompany()
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
-            
+
             var company = await _context.Companies.FirstOrDefaultAsync(a => a.AccountId == account.Id);
             
             if (company == null)
             {
                 return Problem("Not a company!");
             }
-
-            //company.Account = null;
 
             return new CompanyDto(company);
         }
@@ -56,21 +47,22 @@ namespace JofferWebAPI.Controllers
                 return Problem("Entity set 'MyDbContext.Companies'  is null.");
             }
 
-            AccountDto accountDto = new AccountDto();
-            accountDto.Name = companyDto.Name;
-            accountDto.Auth0Id = companyDto.Auth0Id;
-            accountDto.Email = companyDto.Email;
-            accountDto.IsPremium = companyDto.IsPremium;
-            accountDto.IsActive = true;
-            accountDto.AccountType = "Company";
-            accountDto.Password = "";
+            AccountDto accountDto = new()
+            {
+                Name = companyDto.Name,
+                Auth0Id = companyDto.Auth0Id,
+                Email = companyDto.Email,
+                IsPremium = companyDto.IsPremium,
+                IsActive = true,
+                AccountType = "Company",
+                Password = ""
+            };
 
             _context.Accounts.Add(new Account(accountDto));
 
             await _context.SaveChangesAsync();
 
-            var recentlyCreatedAccount =
-                await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
+            var recentlyCreatedAccount = await _context.Accounts.FirstOrDefaultAsync(u => u.Auth0Id == accountDto.Auth0Id);
 
             if (recentlyCreatedAccount == null)
             {
@@ -94,9 +86,7 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<CompanyDto>> PutCompany(CompanyDto companyDto)
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
@@ -175,27 +165,17 @@ namespace JofferWebAPI.Controllers
         public async Task<IActionResult> DeleteCompany(int id)
         {
             var company = await _context.Companies.FirstOrDefaultAsync(t => t.Id == id);
+            if (company == null) return Problem("Company does not exist.");
 
-            if (company == null)
-            {
-                return Problem("Company does not exist.");
-            }
-
-            company.IsActive = false;
-
-            _context.Entry(company).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
 
             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == company.AccountId);
+            if (account == null) return Problem("Account connected to the company does not exist.");
+            
 
-            if (account == null)
-            {
-                return Problem("Account connected to the company does not exist.");
-            }
-
+            company.IsActive = false;
             account.IsActive = false;
 
+            _context.Entry(company).State = EntityState.Modified;
             _context.Entry(account).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
