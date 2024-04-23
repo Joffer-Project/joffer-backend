@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JofferWebAPI.Context;
 using JofferWebAPI.Dtos;
 using JofferWebAPI.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace JofferWebAPI.Controllers
 {

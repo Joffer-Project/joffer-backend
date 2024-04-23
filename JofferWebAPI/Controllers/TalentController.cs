@@ -22,24 +22,17 @@ namespace JofferWebAPI.Controllers
         [ServiceFilter(typeof(AuthActionFilter))]
         public async Task<ActionResult<IEnumerable<TalentWithJobOfferId>>> GetTalents()
         {
-            var account = HttpContext.Items["UserAccount"] as Account;
-
-            if (account == null)
+            if (HttpContext.Items["UserAccount"] is not Account account)
             {
                 return Problem("Failed to fetch the account");
             }
-            
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
 
-            if (company == null)
-            {
-                return Problem($"Company not found. (No company bindend to the account with Auth0Id {account.Auth0Id}. Make sure to activate this controller with a company account.)");
-            }
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.AccountId == account.Id);
+            if (company == null) return Problem($"Company not found. (No company bindend to the account with Auth0Id {account.Auth0Id}. Make sure to activate this controller with a company account.)");
+
             
-            if (_context.Talents == null)
-            {
-                return NotFound();
-            }
+            if (_context.Talents == null)return NotFound();
+
 
             var companyJobOffers =  _context.JobOffers.Where(jo => jo.CompanyId == company.Id);
 
