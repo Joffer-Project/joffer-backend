@@ -58,7 +58,7 @@ namespace JofferWebAPI.Controllers
                 .Join(jobOfferSwipesTalentInterested,
                     talent => talent.Id,
                     jos => jos.TalentId,
-                    (talent, josti) => new { TalentWithJobOfferId = talent, JobOfferId = josti.JobOfferId })
+                    (talent, josti) => new { TalentWithJobOfferId = talent, JobOfferId = josti.JobOfferId, Auth0Id = account.Auth0Id})
                         .ToList();
 
             return Ok(talentsInterested);
