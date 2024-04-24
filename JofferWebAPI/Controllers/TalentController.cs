@@ -186,7 +186,6 @@ namespace JofferWebAPI.Controllers
 
             account.Auth0Id = talentDto.Auth0Id;
             account.Email = talentDto.Email;
-            account.PhoneNumber = talentDto.PhoneNumber;
             account.Password = "NO PASSWORD";
             account.Name = talentDto.Name;
             account.AccountType = "Applicant";

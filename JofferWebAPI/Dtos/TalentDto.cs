@@ -31,7 +31,6 @@ namespace JofferWebAPI.Dtos
             Name = talent.Account.Name;
             Auth0Id = talent.Account.Auth0Id;
             Email = talent.Account.Email;
-            PhoneNumber = talent.Account.PhoneNumber;
             IsPremium = talent.Account.IsPremium;
         }
 
@@ -56,7 +55,6 @@ namespace JofferWebAPI.Dtos
         public string Name { get; set; }
         public string Auth0Id { get; set; }
         public string Email { get; set; }
-        public string PhoneNumber { get; set; }
         public bool IsPremium { get; set; }
 }
 }
