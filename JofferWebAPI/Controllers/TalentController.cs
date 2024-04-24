@@ -104,6 +104,7 @@ namespace JofferWebAPI.Controllers
                 IsPremium = talentDto.IsPremium,
                 IsActive = true,
                 AccountType = "Applicant",
+                Password = "We do not save passwords"
             };  
           
             _context.Accounts.Add(new Account(accountDto));

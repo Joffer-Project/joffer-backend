@@ -42,8 +42,25 @@ namespace JofferWebAPI.Controllers
             {
                 return NotFound();
             }
-            // return await _context.Accounts.ToListAsync();
-            return await _context.Accounts.Select(x => new AccountDto(x)).ToListAsync();
+
+            var accounts = await _context.Accounts
+                .Select(x => new AccountDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Auth0Id = x.Auth0Id,
+                    Password = x.Password,
+                    AccountType = x.AccountType,
+                    Email = x.Email,
+                    // Set PhoneNumber to "no number" if it's null
+                    PhoneNumber = x.PhoneNumber ?? "no number",
+                    IsPremium = x.IsPremium,
+                    IsActive = x.IsActive
+                })
+                .ToListAsync();
+
+            return accounts;
         }
+
     }
 }
