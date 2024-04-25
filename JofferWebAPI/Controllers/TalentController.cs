@@ -53,14 +53,26 @@ namespace JofferWebAPI.Controllers
                     (jos, jo) => jos)
                 .ToList();
 
-            var talentsInterested = _context.Talents
-                .ToList()
+            var talents = await _context.Talents.ToListAsync();
+            var accounts = await _context.Accounts.ToListAsync();
+
+            var talentsInterested = talents
                 .Join(jobOfferSwipesTalentInterested,
                     talent => talent.Id,
                     jos => jos.TalentId,
-                    (talent, josti) => new { TalentWithJobOfferId = talent, JobOfferId = josti.JobOfferId, Auth0Id = account.Auth0Id})
-                        .ToList();
-
+                    (talent, josti) => new { TalentWithJobOfferId = talent, JobOfferId = josti.JobOfferId })
+                .Join(accounts,
+                    tj => tj.TalentWithJobOfferId.AccountId,
+                    talentAccount => talentAccount.Id,
+                    (tj, talentAccount) => new 
+                    { 
+                        talentWithJobOfferId = new TalentDto(tj.TalentWithJobOfferId),
+                        TalentId = tj.TalentWithJobOfferId.Id,
+                        JobOfferId = tj.JobOfferId, 
+                        Auth0Id = talentAccount.Auth0Id 
+                    })
+                .ToList();
+            
             return Ok(talentsInterested);
         }
 
