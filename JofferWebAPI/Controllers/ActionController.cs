@@ -84,14 +84,21 @@ namespace JofferWebAPI.Controllers
 
             if (company == null)
             {
-                return Problem($"Logged in user with auth0Id: {auth0Id} is not a company.");
+                return Problem($"Logged in user with auth0Id: {account.Auth0Id} is not a company.");
             }
             
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+            var talentAccount = await _context.Accounts.FirstOrDefaultAsync(ta => ta.Auth0Id == auth0Id);
+
+            if (talentAccount == null)
+            {
+                return Problem($"TalentAccount with Auth0Id: {auth0Id} does not exists.");
+            }
+            
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == talentAccount.Id);
 
             if (talent == null)
             {
-                return Problem($"Talent with accountId: {account.Id} does not exists.");
+                return Problem($"Talent with Talentid: {talentAccount.Id} does not exists.");
             }
             
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
@@ -187,14 +194,21 @@ namespace JofferWebAPI.Controllers
 
             if (company == null)
             {
-                return Problem($"Logged in user with auth0Id: {auth0Id} is not a company.");
+                return Problem($"Logged in user with auth0Id: {account.Auth0Id} is not a company.");
+            }
+                        
+            var talentAccount = await _context.Accounts.FirstOrDefaultAsync(ta => ta.Auth0Id == auth0Id);
+
+            if (talentAccount == null)
+            {
+                return Problem($"TalentAccount with Auth0Id: {auth0Id} does not exists.");
             }
             
-            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == account.Id);
+            var talent = await _context.Talents.FirstOrDefaultAsync(t => t.AccountId == talentAccount.Id);
 
             if (talent == null)
             {
-                return Problem($"Talent with accountId: {account.Id} does not exists.");
+                return Problem($"Talent with Talentid: {talentAccount.Id} does not exists.");
             }
             
             var jobOffer = await _context.JobOffers.FirstOrDefaultAsync(j => j.Id == jobOfferId);
